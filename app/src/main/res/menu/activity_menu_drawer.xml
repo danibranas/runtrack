@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_events"
+            android:title="Near events" />
+        <!-- android:icon="@drawable/ic_menu_camera" -->
+        <item
+            android:id="@+id/nav_scan"
+            android:title="Scan event QR" />
+        <item
+            android:id="@+id/nav_add_event"
+            android:title="Add event" />
+    </group>
+
+    <item>
+        <menu>
+            <item
+                android:id="@+id/nav_settings"
+                android:title="Settings" />
+            <item
+                android:id="@+id/nav_rateus"
+                android:title="Rate us" />
+        </menu>
+    </item>
+
+</menu>
