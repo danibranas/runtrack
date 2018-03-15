@@ -3,6 +3,7 @@ package com.muei.apm.runtrack
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -25,6 +26,7 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolbar.title = "Near events"
         toggle.syncState()
 
+        startContainer()
         nav_view.setNavigationItemSelectedListener(this)
     }
 
@@ -50,14 +52,13 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_events -> {
-                // None
-                toolbar.title = "Near events"
+                loadInContainer(item, EventsActivityFragment::class.java)
             }
             R.id.nav_scan -> {
-                showToast("TODO: Open camera and scan QR")
+                onScanEventClick(null)
             }
             R.id.nav_add_event -> {
-                showToast("TODO: open Add event activity")
+                loadInContainer(item, AddEventActivityFragment::class.java)
             }
             R.id.nav_settings -> {
                 showToast("TODO: Open settings activity")
@@ -71,8 +72,39 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    fun onTrackEventIdClick(view: View) {
+        loadInContainer(null, TrackEventIdActivityFragment::class.java)
+    }
+
+    fun onTrackEvent(view: View) {
+        showToast("TODO: track event by id")
+    }
+
+    fun onScanEventClick(view: View?) {
+        showToast("TODO: scan event QR")
+    }
+
     fun onEventClick(view: View) {
-        showToast("TODO: View event details");
+        showToast("TODO: view event details")
+    }
+
+    private fun startContainer() {
+        val fragment = EventsActivityFragment::class.java.newInstance() as Fragment
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().add(R.id.main_container, fragment).commit()
+    }
+
+    private fun loadInContainer(item: MenuItem?, fragmentClass: Class<*>) {
+        val fragment = fragmentClass.newInstance() as Fragment
+
+        // Insert the fragment by replacing any existing fragment
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit()
+
+        if (item != null) {
+            item.isChecked = true
+            title = item.title
+        }
     }
 
     private fun showToast(message: CharSequence, isLong: Boolean = false) =
