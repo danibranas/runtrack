@@ -17,32 +17,52 @@ import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.utils.Sensors
 
 class SensorCheckFragment : Fragment(), SensorEventListener {
-    private var sensorManager: SensorManager? = null
+    private var sensors: Sensors? = null
+    private var stepCounterSensor: Sensor? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensors = Sensors(activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+        stepCounterSensor = sensors?.getStepCounterSensor()
+
         val view = inflater.inflate(R.layout.fragment_sensor_check, container, false)
         checkSensors(view)
 
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (sensors!!.checkStepCounter()) {
+            sensors!!.sensorManager.registerListener(this, stepCounterSensor,
+                    SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if (sensors!!.checkStepCounter()) {
+            sensors!!.sensorManager.unregisterListener(this)
+        }
+    }
+
     override fun onSensorChanged(event: SensorEvent?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (sensors!!.checkStepCounter()) {
+            val steps = event!!.values[0].toInt()
+            view!!.findViewById<TextView>(R.id.sensor_check_steps).text = "Steps counted: $steps"
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // Accuracy has changed
     }
 
     private fun checkSensors(view: View) {
-        val sensors = Sensors(sensorManager!!)
-
-        val m = mutableMapOf<String, Boolean>()
-        m["Heart Rate"] = sensors.checkHeartRate()
-        m["Step Counter"] = sensors.checkStepCounter()
-        m["Step Detector"] = sensors.checkStepDetector()
+        val m = mutableMapOf<String, Boolean?>()
+        m["Heart Rate"] = sensors?.checkHeartRate()
+        m["Step Counter"] = sensors?.checkStepCounter()
+        m["Step Detector"] = sensors?.checkStepDetector()
 
         val result = StringBuilder()
         m.forEach {

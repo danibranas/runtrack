@@ -6,6 +6,13 @@
     tools:context=".fragments.SensorCheckFragment">
 
     <TextView
+        android:id="@+id/sensor_check_steps"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="..."
+        android:textSize="18sp" />
+
+    <TextView
         android:id="@+id/sensor_check_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

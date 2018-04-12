@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("RestrictedApi")
     override fun onStart() {
         super.onStart()
-        handleOnAccount(GoogleSignIn.getLastSignedInAccount(this))
+        // TODO: uncomment for google check
+        // handleOnAccount(GoogleSignIn.getLastSignedInAccount(this))
     }
 
     override fun onClick(v: View?) {
