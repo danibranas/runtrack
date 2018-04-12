@@ -16,15 +16,16 @@
             android:title="Add event" />
     </group>
 
-    <item>
-        <menu>
-            <item
-                android:id="@+id/nav_settings"
-                android:title="Settings" />
-            <item
-                android:id="@+id/nav_rateus"
-                android:title="Rate us" />
-        </menu>
-    </item>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_rateus"
+            android:title="Rate us" />
+        <item
+            android:id="@+id/nav_checks"
+            android:title="Check sensors" />
+    </group>
 
 </menu>

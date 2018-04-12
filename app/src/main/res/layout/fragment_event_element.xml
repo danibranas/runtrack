@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".fragments.EventElementFragment">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/event_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="#ffffff"
+        card_view:cardUseCompatPadding="true"
+        android:onClick="onEventClick" >
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/card_relative_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:id="@+id/event_title"
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:padding="10dp"
+                android:text="Race title"
+                android:textSize="20sp"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/event_map_preview"
+                android:layout_width="match_parent"
+                android:layout_height="176dp"
+                android:contentDescription="TODO"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/map_example"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/event_title" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="68dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="#ffffff"
+                android:minHeight="202dp"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="@+id/event_map_preview">
+
+                <TextView
+                    android:id="@+id/event_date_day"
+                    android:layout_width="match_parent"
+                    android:layout_height="39dp"
+                    android:padding="10dp"
+                    android:text="12"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    card_view:layout_constraintEnd_toEndOf="parent"
+                    card_view:layout_constraintStart_toStartOf="parent"
+                    card_view:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/event_date_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="37dp"
+                    android:padding="10dp"
+                    android:text="ene"
+                    android:textAlignment="center"
+                    card_view:layout_constraintBottom_toBottomOf="parent"
+                    card_view:layout_constraintEnd_toEndOf="parent"
+                    card_view:layout_constraintStart_toStartOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/event_map_preview">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/event_distance_title"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:text="Distancia"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/event_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:text="7.10 km"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

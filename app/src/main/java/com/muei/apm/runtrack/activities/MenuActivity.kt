@@ -9,10 +9,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.muei.apm.runtrack.fragments.AddEventActivityFragment
-import com.muei.apm.runtrack.fragments.EventsActivityFragment
 import com.muei.apm.runtrack.R
-import com.muei.apm.runtrack.fragments.TrackEventIdActivityFragment
+import com.muei.apm.runtrack.fragments.*
 import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
 
@@ -69,10 +67,17 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_rateus -> {
                 showToast("TODO: Open Google Play page!")
             }
+            R.id.nav_checks -> {
+                loadInContainer(item, SensorCheckFragment::class.java)
+            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun onAddEventClick(view: View) {
+        loadInContainer(null, AddEventActivityFragment::class.java)
     }
 
     fun onTrackEventIdClick(view: View) {
@@ -88,26 +93,37 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun onEventClick(view: View) {
-        showToast("TODO: view event details")
+        loadInContainer(R.id.nav_events, EventDetailsFragment::class.java)
+    }
+
+    private fun loadInContainer(item: MenuItem?, fragmentClass: Class<*>, addToBackStack: Boolean = true) {
+        val fragment = fragmentClass.newInstance() as Fragment
+
+        // Insert the fragment by replacing any existing fragment
+        val fragmentManager = supportFragmentManager
+        var transaction = fragmentManager.beginTransaction().replace(R.id.main_container, fragment)
+
+        if (addToBackStack) {
+            transaction = transaction.addToBackStack(null)
+        }
+
+        transaction.commit()
+
+        if (item != null) {
+            item.isChecked = true
+            title = item.title
+        }
+    }
+
+    private fun loadInContainer(itemId: Int, fragmentClass: Class<*>, addToBackStack: Boolean = true) {
+        nav_view.setCheckedItem(itemId)
+        return this.loadInContainer(null, fragmentClass, addToBackStack)
     }
 
     private fun startContainer() {
         val fragment = EventsActivityFragment::class.java.newInstance() as Fragment
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().add(R.id.main_container, fragment).commit()
-    }
-
-    private fun loadInContainer(item: MenuItem?, fragmentClass: Class<*>) {
-        val fragment = fragmentClass.newInstance() as Fragment
-
-        // Insert the fragment by replacing any existing fragment
-        val fragmentManager = supportFragmentManager
-        fragmentManager.beginTransaction().replace(R.id.main_container, fragment).commit()
-
-        if (item != null) {
-            item.isChecked = true
-            title = item.title
-        }
     }
 
     private fun showToast(message: CharSequence, isLong: Boolean = false) =
