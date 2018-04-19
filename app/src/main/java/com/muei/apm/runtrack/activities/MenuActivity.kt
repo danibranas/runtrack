@@ -1,38 +1,52 @@
 package com.muei.apm.runtrack.activities
 
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.fragments.*
+import com.muei.apm.runtrack.tasks.DownloadImageTask
 import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.android.synthetic.main.app_bar_menu.*
 
+
 class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    var account: GoogleSignInAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
         setSupportActionBar(toolbar)
-        val account = GoogleSignIn.getLastSignedInAccount(this)
+
+        account = GoogleSignIn.getLastSignedInAccount(this)
 
         if (account == null) {
             goToLoginActivity()
             return
         }
 
+        initializeProfileData()
+
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
-        toolbar.title = "Near events"
+        title = "Near events"
         toggle.syncState()
 
         startContainer()
@@ -86,6 +100,11 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_google_play_services_checks -> {
                 loadInContainer(item, GooglePlayServicesCheckFragment::class.java)
+            }
+            R.id.nav_sign_out -> {
+                getGoogleSignInClient().signOut().addOnSuccessListener {
+                    goToLoginActivity()
+                }
             }
         }
 
@@ -149,10 +168,35 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
     }
 
+    private fun initializeProfileData() {
+        val header = nav_view.getHeaderView(0)
+        header.findViewById<TextView>(R.id.account_email).text = account?.email
+
+        header.findViewById<TextView>(R.id.account_name).text =
+                "${account?.givenName} ${account?.familyName}"
+
+        val bitmap =DownloadImageTask().execute(account?.photoUrl.toString()).get()
+        val image = header.findViewById<ImageView>(R.id.account_image)
+        image.setImageBitmap(bitmap)
+
+        val dr = RoundedBitmapDrawableFactory.create(Resources.getSystem(), bitmap)
+        dr.cornerRadius = (image.height/2).toFloat()
+    }
+
     private fun showToast(message: CharSequence, isLong: Boolean = false) =
             Toast.makeText(
                     this,
                     message,
                     if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
             ).show()
+
+    @Synchronized
+    private fun getGoogleSignInClient(): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .build()
+
+        return GoogleSignIn.getClient(this, gso)
+    }
 }

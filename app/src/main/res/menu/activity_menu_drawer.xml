@@ -34,4 +34,10 @@
             android:title="Check Google Play Services" />
     </group>
 
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sign_out"
+            android:title="Sign out" />
+    </group>
+
 </menu>
