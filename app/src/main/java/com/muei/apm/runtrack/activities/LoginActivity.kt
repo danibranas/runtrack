@@ -12,7 +12,6 @@ import com.google.android.gms.common.SignInButton
 import android.view.WindowManager
 import android.os.Build
 import android.util.Log
-import com.google.android.gms.common.GoogleApiAvailability
 import com.muei.apm.runtrack.R
 import java.lang.RuntimeException
 
@@ -97,14 +96,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             val w = window // in Activity's onCreate() for instance
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        }
-    }
-
-    private fun checkGooglePlayServices() {
-        val check = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
-
-        when(check) {
-
         }
     }
 }

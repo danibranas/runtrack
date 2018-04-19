@@ -36,7 +36,7 @@ import java.util.*
 
 class TrackingActivity : AppCompatActivity() {
 
-    private val tag = TrackingActivity::class.java.simpleName
+    private val TAG = TrackingActivity::class.java.simpleName
 
     /**
      * Code used in requesting runtime permissions.
@@ -123,11 +123,11 @@ class TrackingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tracking)
 
         // Locate the UI widgets.
-        mStartUpdatesButton = findViewById(R.id.start_updates_button) as Button
-        mStopUpdatesButton = findViewById(R.id.stop_updates_button) as Button
-        mLatitudeTextView = findViewById(R.id.latitude_text) as TextView
-        mLongitudeTextView = findViewById(R.id.longitude_text) as TextView
-        mLastUpdateTimeTextView = findViewById(R.id.last_update_time_text) as TextView
+        mStartUpdatesButton = findViewById(R.id.start_updates_button)
+        mStopUpdatesButton = findViewById(R.id.stop_updates_button)
+        mLatitudeTextView = findViewById(R.id.latitude_text)
+        mLongitudeTextView = findViewById(R.id.longitude_text)
+        mLastUpdateTimeTextView = findViewById(R.id.last_update_time_text)
 
         // Set labels.
         mLatitudeLabel = resources.getString(R.string.latitude_label)
@@ -169,7 +169,7 @@ class TrackingActivity : AppCompatActivity() {
             if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
                 // Since KEY_LOCATION was found in the Bundle, we can be sure that mCurrentLocation
                 // is not null.
-                mCurrentLocation = savedInstanceState.getParcelable<Location>(KEY_LOCATION)
+                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION)
             }
 
             // Update the value of mLastUpdateTime from the Bundle and update the UI.
@@ -241,9 +241,9 @@ class TrackingActivity : AppCompatActivity() {
         when (requestCode) {
         // Check for the integer request code originally supplied to startResolutionForResult().
             REQUEST_CHECK_SETTINGS -> when (resultCode) {
-                Activity.RESULT_OK -> Log.i(tag, "User agreed to make required location settings changes.")
+                Activity.RESULT_OK -> Log.i(TAG, "User agreed to make required location settings changes.")
                 Activity.RESULT_CANCELED -> {
-                    Log.i(tag, "User chose not to make required location settings changes.")
+                    Log.i(TAG, "User chose not to make required location settings changes.")
                     mRequestingLocationUpdates = false
                     updateUI()
                 }
@@ -282,7 +282,7 @@ class TrackingActivity : AppCompatActivity() {
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient!!.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(this) {
-                    Log.i(tag, "All location settings are satisfied.")
+                    Log.i(TAG, "All location settings are satisfied.")
 
                     mFusedLocationClient!!.requestLocationUpdates(mLocationRequest,
                             mLocationCallback!!, Looper.myLooper())
@@ -293,20 +293,20 @@ class TrackingActivity : AppCompatActivity() {
                     val statusCode = (e as ApiException).statusCode
                     when (statusCode) {
                         LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
-                            Log.i(tag, "Location settings are not satisfied. Attempting to upgrade " + "location settings ")
+                            Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " + "location settings ")
                             try {
                                 // Show the dialog by calling startResolutionForResult(), and check the
                                 // result in onActivityResult().
                                 val rae = e as ResolvableApiException
                                 rae.startResolutionForResult(this@TrackingActivity, REQUEST_CHECK_SETTINGS)
                             } catch (sie: IntentSender.SendIntentException) {
-                                Log.i(tag, "PendingIntent unable to execute request.")
+                                Log.i(TAG, "PendingIntent unable to execute request.")
                             }
 
                         }
                         LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
                             val errorMessage = "Location settings are inadequate, and cannot be " + "fixed here. Fix in Settings."
-                            Log.e(tag, errorMessage)
+                            Log.e(TAG, errorMessage)
                             Toast.makeText(this@TrackingActivity, errorMessage, Toast.LENGTH_LONG).show()
                             mRequestingLocationUpdates = false
                         }
@@ -332,11 +332,11 @@ class TrackingActivity : AppCompatActivity() {
      */
     private fun setButtonsEnabledState() {
         if (mRequestingLocationUpdates!!) {
-            mStartUpdatesButton!!.setEnabled(false)
-            mStopUpdatesButton!!.setEnabled(true)
+            mStartUpdatesButton!!.isEnabled = false
+            mStopUpdatesButton!!.isEnabled = true
         } else {
-            mStartUpdatesButton!!.setEnabled(true)
-            mStopUpdatesButton!!.setEnabled(false)
+            mStartUpdatesButton!!.isEnabled = true
+            mStopUpdatesButton!!.isEnabled = false
         }
     }
 
@@ -359,7 +359,7 @@ class TrackingActivity : AppCompatActivity() {
      */
     private fun stopLocationUpdates() {
         if (!(mRequestingLocationUpdates)!!) {
-            Log.d(tag, "stopLocationUpdates: updates never requested, no-op.")
+            Log.d(TAG, "stopLocationUpdates: updates never requested, no-op.")
             return
         }
 
@@ -435,7 +435,7 @@ class TrackingActivity : AppCompatActivity() {
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
-            Log.i(tag, "Displaying permission rationale to provide additional context.")
+            Log.i(TAG, "Displaying permission rationale to provide additional context.")
             showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, View.OnClickListener {
                 // Request permission
@@ -444,7 +444,7 @@ class TrackingActivity : AppCompatActivity() {
                         REQUEST_PERMISSIONS_REQUEST_CODE)
             })
         } else {
-            Log.i(tag, "Requesting permission")
+            Log.i(TAG, "Requesting permission")
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
@@ -459,15 +459,15 @@ class TrackingActivity : AppCompatActivity() {
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
-        Log.i(tag, "onRequestPermissionResult")
+        Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.isEmpty()) {
                 // If user interaction was interrupted, the permission request is cancelled and you
                 // receive empty arrays.
-                Log.i(tag, "User interaction was cancelled.")
+                Log.i(TAG, "User interaction was cancelled.")
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates!!) {
-                    Log.i(tag, "Permission granted, updates requested, starting location updates")
+                    Log.i(TAG, "Permission granted, updates requested, starting location updates")
                     startLocationUpdates()
                 }
             } else {
