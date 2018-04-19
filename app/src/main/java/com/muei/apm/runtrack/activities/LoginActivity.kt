@@ -1,6 +1,5 @@
 package com.muei.apm.runtrack.activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -12,9 +11,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import android.view.WindowManager
 import android.os.Build
+import android.util.Log
+import com.google.android.gms.common.GoogleApiAvailability
 import com.muei.apm.runtrack.R
+import java.lang.RuntimeException
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class LoginActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val RC_SIGN_IN = 25496
     }
@@ -29,17 +31,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         configureGoogleSignIn()
     }
 
-    // Can be safely ignored (https://developers.google.com/android/guides/releases#march_20_2018_-_version_1200)
-    @SuppressLint("RestrictedApi")
     override fun onStart() {
         super.onStart()
-        // TODO: uncomment for google check
-        // handleOnAccount(GoogleSignIn.getLastSignedInAccount(this))
+        handleOnAccount(GoogleSignIn.getLastSignedInAccount(this))
     }
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.sign_in_button -> handleSignInClick(v)
+            R.id.sign_in_button -> handleSignInClick()
         }
     }
 
@@ -47,42 +46,46 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            @SuppressLint("RestrictedApi")
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleOnAccount(task.result)
+            val result: GoogleSignInAccount?
+
+            try {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                result = task.result
+            } catch (e: RuntimeException) {
+                Log.println(Log.INFO, "Api", e.message)
+                throw e
+            }
+
+            handleOnAccount(result)
         }
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun handleSignInClick(view: View) {
-        // TODO: uncomment for Google SignIn
-        // val signInIntent = mGoogleSignInClient!!.signInIntent
-        // startActivityForResult(signInIntent, MainActivity.RC_SIGN_IN)
-
-        // TODO: skipping for dev purposes. Remove it
-        handleOnAccount(null)
+    private fun handleSignInClick() {
+        val signInIntent = mGoogleSignInClient!!.signInIntent
+        startActivityForResult(signInIntent, LoginActivity.RC_SIGN_IN)
     }
 
     private fun handleOnAccount(account: GoogleSignInAccount?) {
         if (account == null) {
-            // TODO: show error message and return void
-            // return
+            // TODO: show error message
+            return
         }
 
-        // TODO: save account info
+        // TODO: retrieve account info from API
+        // account.getResult()
+
         val intent = Intent(this, MenuActivity::class.java)
-        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NO_HISTORY
+        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
     }
 
+    @Synchronized
     private fun configureGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestProfile()
                 .build()
 
-        // Can be safely ignored (https://developers.google.com/android/guides/releases#march_20_2018_-_version_1200)
-        @SuppressLint("RestrictedApi")
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         val signInButton = findViewById<SignInButton>(R.id.sign_in_button)
@@ -94,6 +97,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val w = window // in Activity's onCreate() for instance
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        }
+    }
+
+    private fun checkGooglePlayServices() {
+        val check = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
+
+        when(check) {
+
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.muei.apm.runtrack.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.fragments.*
 import kotlinx.android.synthetic.main.activity_menu.*
@@ -20,6 +22,12 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
         setSupportActionBar(toolbar)
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+
+        if (account == null) {
+            goToLoginActivity()
+            return
+        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -43,9 +51,9 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.action_settings -> true
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -69,6 +77,15 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_checks -> {
                 loadInContainer(item, SensorCheckFragment::class.java)
+            }
+            R.id.nav_location_checks -> {
+                item.isChecked = true
+                title = item.title
+                val intent = Intent(this, TrackingActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_google_play_services_checks -> {
+                loadInContainer(item, GooglePlayServicesCheckFragment::class.java)
             }
         }
 
@@ -124,6 +141,12 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fragment = EventsActivityFragment::class.java.newInstance() as Fragment
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().add(R.id.main_container, fragment).commit()
+    }
+
+    private fun goToLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
     }
 
     private fun showToast(message: CharSequence, isLong: Boolean = false) =

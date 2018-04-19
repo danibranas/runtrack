@@ -7,7 +7,7 @@
     tools:context="com.muei.apm.runtrack.fragments.TrackEventIdActivityFragment">
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/track_event_button"
         android:layout_width="359dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -21,6 +21,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editText" />
 
     <EditText
+        android:hint="Event id"
         android:id="@+id/editText"
         android:layout_width="358dp"
         android:layout_height="wrap_content"

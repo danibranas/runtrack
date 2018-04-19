@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">RunTrack</string>
+    <string name="server_client_id">863509011186-sk97pnjt9q02bog6m92kbge125iq55fk.apps.googleusercontent.com</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -12,6 +13,20 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_events">EventsActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="last_update_time_label">Last location update time</string>
+
+    <string name="start_updates">Start updates</string>
+    <string name="stop_updates">Stop updates</string>
+
+    <string name="location_settings_inadequate_warning">The location settings on the device are not
+        adequate to run this sample. Fix in Settings.</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
 </resources>
