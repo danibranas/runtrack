@@ -9,7 +9,7 @@ import java.util.*
 class LocationUtils {
     companion object {
 
-        val KEY_REQUESTING_LOCATION_UPDATES = "requesting_locaction_updates"
+        const val KEY_REQUESTING_LOCATION_UPDATES = "requesting_location_updates"
 
         fun requestingLocationUpdates(context: Context): Boolean {
             return PreferenceManager.getDefaultSharedPreferences(context)
@@ -35,7 +35,7 @@ class LocationUtils {
             return if (location == null)
                 "Unknown location"
             else
-                "(${location.getLatitude()}, ${location.getLongitude()})"
+                "(${location.latitude}, ${location.longitude})"
         }
 
         fun getLocationTitle(context: Context): String {

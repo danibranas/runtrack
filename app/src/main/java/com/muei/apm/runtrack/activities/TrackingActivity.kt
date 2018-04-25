@@ -51,6 +51,9 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             val binder = service as LocationUpdatesService.LocalBinder
             mService = binder.service
             mBound = true
+
+            // Request location updates on service connection
+            requestLocationUpdates()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -86,13 +89,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         mRequestLocationUpdatesButton = findViewById(R.id.request_location_updates_button)
         mRemoveLocationUpdatesButton = findViewById(R.id.remove_location_updates_button)
 
-        mRequestLocationUpdatesButton!!.setOnClickListener({
-            if (!checkPermissions()) {
-                requestPermissions()
-            } else {
-                mService!!.requestLocationUpdates()
-            }
-        })
+        mRequestLocationUpdatesButton!!.setOnClickListener({ requestLocationUpdates() })
 
         mRemoveLocationUpdatesButton!!.setOnClickListener({
             mService!!.removeLocationUpdates()
@@ -157,6 +154,14 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    private fun requestLocationUpdates() {
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            mService!!.requestLocationUpdates()
+        }
+    }
+
     private fun requestPermissions() {
         val shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -194,7 +199,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             when {
                 grantResults.isEmpty() -> // If user interaction was interrupted, the permission request is cancelled and you
                     // receive empty arrays.
-                    Log.i(TAG, "User interaction was cancelled.")
+                    Log.i(TAG, "UserEvent interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> // Permission was granted.
                     mService!!.requestLocationUpdates()
                 else -> {
