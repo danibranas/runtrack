@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">RunTrack</string>
-    <string name="server_client_id">863509011186-sk97pnjt9q02bog6m92kbge125iq55fk.apps.googleusercontent.com</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="dummy_button">Dummy Button</string>

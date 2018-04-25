@@ -26,6 +26,9 @@ proguard/
 # Signing files
 .signing/
 
+# Secrets file
+secrets.xml
+
 # Log Files
 *.log
 
