@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.app_bar_menu.*
 
 class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    var account: GoogleSignInAccount? = null
+    private var account: GoogleSignInAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,16 +58,6 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -170,10 +160,11 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initializeProfileData() {
         val header = nav_view.getHeaderView(0)
-        header.findViewById<TextView>(R.id.account_email).text = account?.email
+        val name = "${account?.givenName} ${account?.familyName}"
 
-        header.findViewById<TextView>(R.id.account_name).text =
-                "${account?.givenName} ${account?.familyName}"
+        header.findViewById<TextView>(R.id.account_email).text = account?.email
+        header.findViewById<TextView>(R.id.account_name).text = name
+
 
         val bitmap =DownloadImageTask().execute(account?.photoUrl.toString()).get()
         val image = header.findViewById<ImageView>(R.id.account_image)
