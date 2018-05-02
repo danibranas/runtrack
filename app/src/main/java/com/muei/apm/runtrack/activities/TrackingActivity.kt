@@ -133,7 +133,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         // val sydney = LatLng(-33.867, 151.206)
 
         // TODO: check permissions
-        map.isMyLocationEnabled = true
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            map.isMyLocationEnabled = true
+            this.map = map
+        }
 
         /*
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13f))
@@ -143,7 +148,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 .snippet("The most populous city in Australia.")
                 .position(sydney))
         */
-        this.map = map
+        //this.map = map
     }
 
     /**

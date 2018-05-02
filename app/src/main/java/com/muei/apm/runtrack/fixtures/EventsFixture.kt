@@ -11,7 +11,8 @@ class EventsFixture {
                 "III Carrera Madrid",
                 "XII Milla solidaria",
                 "XVII Carrera increible",
-                "II La carrera returns"
+                "II La carrera returns",
+                "II Carrera de obstáculos"
         )
 
         fun generate(length: Int = 5): List<Event> {
@@ -21,15 +22,29 @@ class EventsFixture {
         }
 
         private fun generateRandomEvent(): Event {
-            val event = Event()
+            val event = Event(generateRandomId())
+
             event.name = names[Random().nextInt(names.size)]
             event.distance = this.generateRandomFloat(50)
-            // TODO: generate random values
+            event.date = generateRandomDate()
+
             return event
         }
 
         private fun generateRandomFloat(bound: Int): Float {
             return (Random().nextInt(bound) + Random().nextInt(10).toFloat()/10)
+        }
+
+        private fun generateRandomId(): Long {
+            return Random().nextLong()
+        }
+
+        private fun generateRandomDate(): Date {
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.DATE, Random().nextInt(60))
+            calendar.add(Calendar.HOUR, Random().nextInt(10))
+            calendar.add(Calendar.MINUTE, Random().nextInt(30))
+            return calendar.time
         }
     }
 }

@@ -166,7 +166,7 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         header.findViewById<TextView>(R.id.account_name).text = name
 
 
-        val bitmap =DownloadImageTask().execute(account?.photoUrl.toString()).get()
+        val bitmap = DownloadImageTask().execute(account?.photoUrl.toString()).get()
         val image = header.findViewById<ImageView>(R.id.account_image)
         image.setImageBitmap(bitmap)
 
