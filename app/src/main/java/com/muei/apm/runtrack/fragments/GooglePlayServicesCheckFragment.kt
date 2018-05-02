@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.utils.GooglePlayServices
+import com.muei.apm.runtrack.utils.MediaUtils
 
 class GooglePlayServicesCheckFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -16,7 +17,9 @@ class GooglePlayServicesCheckFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_google_play_services_check, container, false)
 
-        val text = "Google Play Services: ${GooglePlayServices(context!!).isAvailable()}"
+        var text = "- Google Play Services: ${GooglePlayServices(context!!).isAvailable()}"
+        text = "$text\n- Media Apps: ${MediaUtils(context!!).checkMediaCaptureApps()}"
+
         view.findViewById<TextView>(R.id.location_check_text)?.text = text
         return view
     }

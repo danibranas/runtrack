@@ -22,15 +22,17 @@ class TrackingReceiver(private val getMap: () -> GoogleMap?): BroadcastReceiver(
             val newPosition = LatLng(location.latitude, location.longitude)
 
             getMap()?.animateCamera(CameraUpdateFactory.newLatLngZoom(newPosition, 17f))
-            getMap()?.addPolyline(createPolyline(newPosition))
+            getMap()?.addPolyline(createPolyline(getMap()!!, newPosition))
         }
     }
 
-    private fun createPolyline(position: LatLng): PolylineOptions {
+    @Suppress("DEPRECATION")
+    private fun createPolyline(map: GoogleMap, position: LatLng): PolylineOptions {
+        val currentPos = LatLng(map.myLocation.latitude, map.myLocation.longitude)
+
         return PolylineOptions()
                 .geodesic(true)
-                .width(15f)
-                .color(0xFF5722)
+                .add(currentPos)
                 .add(position)
     }
 }

@@ -1,13 +1,16 @@
 package com.muei.apm.runtrack.activities
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
@@ -77,6 +80,15 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 showToast("TODO: Open settings activity")
             }
             R.id.nav_rateus -> {
+                val appPackageName = packageName
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=$appPackageName")))
+                } catch (e: android.content.ActivityNotFoundException) {
+                    startActivity(Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+                }
+
                 showToast("TODO: Open Google Play page!")
             }
             R.id.nav_checks -> {
@@ -92,9 +104,15 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 loadInContainer(item, GooglePlayServicesCheckFragment::class.java)
             }
             R.id.nav_sign_out -> {
-                getGoogleSignInClient().signOut().addOnSuccessListener {
-                    goToLoginActivity()
-                }
+                AlertDialog.Builder(this)
+                        .setMessage("Are you sure?")
+                        .setPositiveButton("Sign out", { _: DialogInterface, _: Int ->
+                            getGoogleSignInClient().signOut().addOnSuccessListener {
+                                goToLoginActivity()
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show()
             }
         }
 
@@ -116,10 +134,6 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun onScanEventClick(view: View?) {
         showToast("TODO: scan event QR")
-    }
-
-    fun onEventClick(view: View) {
-        loadInContainer(R.id.nav_events, EventDetailsFragment::class.java)
     }
 
     private fun loadInContainer(item: MenuItem?, fragmentClass: Class<*>, addToBackStack: Boolean = true) {

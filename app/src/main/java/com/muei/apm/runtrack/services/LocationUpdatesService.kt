@@ -205,7 +205,6 @@ class LocationUpdatesService : Service() {
             LocationUtils.setRequestingLocationUpdates(this, false)
             Log.e(TAG, "Lost location permission. Could not request updates. $unlikely")
         }
-
     }
 
     /**
@@ -222,7 +221,6 @@ class LocationUpdatesService : Service() {
             LocationUtils.setRequestingLocationUpdates(this, true)
             Log.e(TAG, "Lost location permission. Could not remove updates. $unlikely")
         }
-
     }
 
     /**
@@ -236,10 +234,6 @@ class LocationUpdatesService : Service() {
         // Extra to help us figure out if we arrived in onStartCommand via the notification or not.
         intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true)
 
-        // The PendingIntent that leads to a call to onStartCommand() in this service.
-        val servicePendingIntent = PendingIntent.getService(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-
         // The PendingIntent to launch activity.
         val activityPendingIntent = PendingIntent.getActivity(this, 0,
                 Intent(this, TrackingActivity::class.java), 0)
@@ -247,8 +241,6 @@ class LocationUpdatesService : Service() {
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
                 .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
                         activityPendingIntent)
-                .addAction(R.drawable.ic_cancel, getString(R.string.remove_location_updates),
-                        servicePendingIntent)
                 .setContentText(text)
                 .setContentTitle(LocationUtils.getLocationTitle(this))
                 .setOngoing(true)
@@ -278,7 +270,6 @@ class LocationUpdatesService : Service() {
         } catch (unlikely: SecurityException) {
             Log.e(TAG, "Lost location permission.$unlikely")
         }
-
     }
 
     private fun onNewLocation(location: Location) {
@@ -289,6 +280,7 @@ class LocationUpdatesService : Service() {
         // Notify anyone listening for broadcasts about the new location.
         val intent = Intent(ACTION_BROADCAST)
         intent.putExtra(EXTRA_LOCATION, location)
+        // TODO: add extra info
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
 
         // Update notification content if running as a foreground service.

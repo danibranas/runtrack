@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.muei.apm.runtrack.R
@@ -33,6 +34,6 @@ class EventsActivityFragment : Fragment() {
         eventsRecyclerView.layoutManager = LinearLayoutManager(this.context)
 
         // specify an adapter
-        eventsRecyclerView.adapter = EventsRecyclerAdapter(EventsFixture.generate())
+        eventsRecyclerView.adapter = EventsRecyclerAdapter(EventsFixture.generate(), context)
     }
 }

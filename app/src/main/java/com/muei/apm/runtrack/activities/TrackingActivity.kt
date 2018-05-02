@@ -1,20 +1,26 @@
 package com.muei.apm.runtrack.activities
 
 import android.Manifest
+import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.Button
+import android.util.TypedValue
+import android.view.View
+import android.view.ViewGroup
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.muei.apm.runtrack.BuildConfig
@@ -23,6 +29,7 @@ import com.muei.apm.runtrack.services.LocationUpdatesService
 import com.muei.apm.runtrack.utils.LocationUtils
 import com.google.android.gms.maps.MapFragment
 import com.muei.apm.runtrack.activities.tracking.TrackingReceiver
+import com.muei.apm.runtrack.utils.PausableChronometer
 
 class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener,
         OnMapReadyCallback {
@@ -43,17 +50,16 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var mBound = false
 
     // UI elements.
-    private var mRequestLocationUpdatesButton: Button? = null
-    private var mRemoveLocationUpdatesButton: Button? = null
+    private var mStartPauseTrackingButton: FloatingActionButton? = null
+    private var mStopTrackingButton: FloatingActionButton? = null
+    private var mapFragment: View? = null
+    private var chrono: PausableChronometer? = null
 
     private val mServiceConnection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder = service as LocationUpdatesService.LocalBinder
             mService = binder.service
             mBound = true
-
-            // Request location updates on service connection
-            requestLocationUpdates()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -68,6 +74,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         super.onCreate(savedInstanceState)
         myReceiver = TrackingReceiver({ map })
         setContentView(R.layout.activity_tracking)
+        supportActionBar?.hide()
 
         val mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
@@ -78,6 +85,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 requestPermissions()
             }
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            (findViewById<ViewGroup>(R.id.activity_tracking))
+                    .layoutTransition
+                    .enableTransitionType(LayoutTransition.CHANGING)
+        }
     }
 
     override fun onStart() {
@@ -86,14 +99,24 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(this)
 
-        mRequestLocationUpdatesButton = findViewById(R.id.request_location_updates_button)
-        mRemoveLocationUpdatesButton = findViewById(R.id.remove_location_updates_button)
+        mStartPauseTrackingButton = findViewById(R.id.start_pause_tracking_button)
+        mStopTrackingButton = findViewById(R.id.stop_tracking_button)
+        chrono = PausableChronometer(findViewById(R.id.chronometer))
+        mapFragment = findViewById(R.id.map)
 
-        mRequestLocationUpdatesButton!!.setOnClickListener({ requestLocationUpdates() })
-
-        mRemoveLocationUpdatesButton!!.setOnClickListener({
-            mService!!.removeLocationUpdates()
-        })
+        mStartPauseTrackingButton!!.setOnClickListener({ toggleLocationUpdates() })
+        mStopTrackingButton!!.setOnClickListener({
+            AlertDialog.Builder(this)
+                    .setMessage("Stop event tracking?")
+                    .setPositiveButton("Stop", { _: DialogInterface, _: Int ->
+                        chrono!!.stop()
+                        chrono!!.reset()
+                        mService!!.removeLocationUpdates()
+                        // TODO: Go to event details
+                    })
+                    .setNegativeButton("No", null)
+                    .show()
+       })
 
         // Restore the state of the buttons when the activity (re)launches.
         setButtonsState(LocationUtils.requestingLocationUpdates(this))
@@ -130,25 +153,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
-        // val sydney = LatLng(-33.867, 151.206)
-
-        // TODO: check permissions
-        if (!checkPermissions()) {
-            requestPermissions()
-        } else {
-            map.isMyLocationEnabled = true
-            this.map = map
-        }
-
-        /*
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13f))
-
-        map.addMarker(MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney))
-        */
-        //this.map = map
+        map.isMyLocationEnabled = true
+        this.map = map
     }
 
     /**
@@ -159,11 +165,15 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    private fun requestLocationUpdates() {
-        if (!checkPermissions()) {
-            requestPermissions()
+    private fun toggleLocationUpdates() {
+        if (LocationUtils.requestingLocationUpdates(this)) {
+            mService!!.removeLocationUpdates()
         } else {
-            mService!!.requestLocationUpdates()
+            if (!checkPermissions()) {
+                requestPermissions()
+            } else {
+                mService!!.requestLocationUpdates()
+            }
         }
     }
 
@@ -241,11 +251,28 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     private fun setButtonsState(requestingLocationUpdates: Boolean) {
         if (requestingLocationUpdates) {
-            mRequestLocationUpdatesButton!!.isEnabled = false
-            mRemoveLocationUpdatesButton!!.isEnabled = true
+            mStopTrackingButton!!.visibility = View.VISIBLE
+            mStartPauseTrackingButton!!.setImageResource(R.drawable.ic_pause_icon)
+            chrono!!.chronometer?.visibility = View.VISIBLE
+            chrono!!.start()
+            doSetMarginBottomDp(mapFragment, 300)
         } else {
-            mRequestLocationUpdatesButton!!.isEnabled = true
-            mRemoveLocationUpdatesButton!!.isEnabled = false
+            mStartPauseTrackingButton!!.setImageResource(R.drawable.ic_play_icon)
+            chrono!!.stop()
+        }
+    }
+
+    private fun doSetMarginBottomDp(view: View?, marginBottom: Int) {
+        val p = view?.layoutParams as ViewGroup.MarginLayoutParams?
+
+        if (p != null) {
+            val marginBottomDp = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, marginBottom.toFloat(),
+                    resources.displayMetrics
+            )
+
+            p.bottomMargin = marginBottomDp.toInt()
+            view?.requestLayout()
         }
     }
 }

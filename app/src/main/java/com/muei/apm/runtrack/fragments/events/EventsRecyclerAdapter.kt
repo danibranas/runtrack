@@ -1,16 +1,19 @@
 package com.muei.apm.runtrack.fragments.events
 
+import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.muei.apm.runtrack.R
+import com.muei.apm.runtrack.activities.EventDetailsActivity
 import com.muei.apm.runtrack.models.Event
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EventsRecyclerAdapter(events: List<Event>): RecyclerView.Adapter<EventsRecyclerAdapter.ViewHolder>() {
+class EventsRecyclerAdapter(events: List<Event>, var context: Context?): RecyclerView.Adapter<EventsRecyclerAdapter.ViewHolder>() {
 
     private var eventDataSet: List<Event> = events
 
@@ -36,6 +39,12 @@ class EventsRecyclerAdapter(events: List<Event>): RecyclerView.Adapter<EventsRec
         // TODO: customize fields...
         holder.itemView.findViewById<TextView>(R.id.event_date_day).text = getDay(event)
         holder.itemView.findViewById<TextView>(R.id.event_date_month).text = getMonthName(event)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, EventDetailsActivity::class.java)
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+            context?.startActivity(intent)
+        }
     }
 
     private fun getDay(event: Event): String {

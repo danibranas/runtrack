@@ -31,7 +31,7 @@
             android:title="Check location" />
         <item
             android:id="@+id/nav_google_play_services_checks"
-            android:title="Check Google Play Services" />
+            android:title="Check features" />
     </group>
 
     <group android:checkableBehavior="single">
