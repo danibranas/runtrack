@@ -1,5 +1,6 @@
 package com.muei.apm.runtrack.activities
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import android.view.WindowManager
 import android.os.Build
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import com.muei.apm.runtrack.R
 import java.lang.RuntimeException
@@ -60,8 +62,15 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun handleSignInClick() {
-        val signInIntent = mGoogleSignInClient!!.signInIntent
-        startActivityForResult(signInIntent, LoginActivity.RC_SIGN_IN)
+        AlertDialog.Builder(this)
+                .setTitle("Conditions of use")
+                .setMessage(R.string.eula_content)
+                .setPositiveButton("Agree", { _: DialogInterface, _: Int ->
+                    val signInIntent = mGoogleSignInClient!!.signInIntent
+                    startActivityForResult(signInIntent, LoginActivity.RC_SIGN_IN)
+                })
+                .setNegativeButton("Don't agree", null)
+                .show()
     }
 
     private fun handleOnAccount(account: GoogleSignInAccount?) {
