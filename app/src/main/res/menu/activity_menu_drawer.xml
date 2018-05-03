@@ -9,9 +9,6 @@
             android:title="Near events" />
         <!-- android:icon="@drawable/ic_menu_camera" -->
         <item
-            android:id="@+id/nav_scan"
-            android:title="Scan event QR" />
-        <item
             android:id="@+id/nav_add_event"
             android:title="Add event" />
     </group>
@@ -36,6 +33,7 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:checkable="false"
             android:id="@+id/nav_sign_out"
             android:title="Sign out" />
     </group>

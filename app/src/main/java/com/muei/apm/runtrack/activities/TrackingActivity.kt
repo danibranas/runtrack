@@ -112,7 +112,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                         chrono!!.stop()
                         chrono!!.reset()
                         mService!!.removeLocationUpdates()
-                        // TODO: Go to event details
+                        // TODO: Modify event in DB
+                        startEventDetailsActivity()
                     })
                     .setNegativeButton("No", null)
                     .show()
@@ -274,5 +275,13 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             p.bottomMargin = marginBottomDp.toInt()
             view?.requestLayout()
         }
+    }
+
+    private fun startEventDetailsActivity() {
+        val intent = Intent(this, EventDetailsActivity::class.java)
+        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        // TODO: pass right id
+        intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+        startActivity(intent)
     }
 }

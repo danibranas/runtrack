@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 result = task.result
             } catch (e: RuntimeException) {
                 Log.println(Log.INFO, "Api", e.message)
-                throw e
+                return
             }
 
             handleOnAccount(result)
@@ -63,13 +63,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun handleSignInClick() {
         AlertDialog.Builder(this)
-                .setTitle("Conditions of use")
+                .setTitle(R.string.eula_title)
                 .setMessage(R.string.eula_content)
-                .setPositiveButton("Agree", { _: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.eula_agree, { _: DialogInterface, _: Int ->
                     val signInIntent = mGoogleSignInClient!!.signInIntent
                     startActivityForResult(signInIntent, LoginActivity.RC_SIGN_IN)
                 })
-                .setNegativeButton("Don't agree", null)
+                .setNegativeButton(R.string.eula_disagree, null)
                 .show()
     }
 

@@ -70,9 +70,6 @@ class MenuActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_events -> {
                 loadInContainer(item, EventsActivityFragment::class.java)
             }
-            R.id.nav_scan -> {
-                onScanEventClick(null)
-            }
             R.id.nav_add_event -> {
                 loadInContainer(item, AddEventActivityFragment::class.java)
             }

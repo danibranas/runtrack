@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RunTrack</string>
+    <string name="app_name">Runtrack</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -32,7 +32,10 @@
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
         functionality.</string>
     <string name="settings">Settings</string>
-    <string name="eula_content">Please read this End-User License Agreement ("Agreement") carefully before clicking the "I Agree" button, downloading or using Runtrack ("Application").
+    <string name="eula_title">Conditions of use</string>
+    <string name="eula_agree">I agree</string>
+    <string name="eula_disagree">Don\'t agree</string>
+    <string name="eula_content">Please read this Conditions of use ("Agreement") carefully before clicking the "I Agree" button, downloading or using Runtrack ("Application").
 \nBy clicking the "I Agree" button, downloading or using the Application, you are agreeing to be bound by the terms and conditions of this Agreement.
 \n\nIf you do not agree to the terms of this Agreement, do not click on the "I Agree" button and do not download or use the Application.
 
