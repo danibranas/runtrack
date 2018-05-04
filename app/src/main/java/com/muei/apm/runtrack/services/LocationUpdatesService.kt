@@ -80,7 +80,7 @@ class LocationUpdatesService : Service() {
     private var mLocationRequest: LocationRequest? = null
 
     /**
-     * Provides access to the Fused Location Provider API.
+     * Provides access to the Fused LocationEntity Provider API.
      */
     private var mFusedLocationClient: FusedLocationProviderClient? = null
 
@@ -126,7 +126,7 @@ class LocationUpdatesService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.i(TAG, "Service started")
+        Log.i(TAG, "ServiceDb started")
         val startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION,
                 false)
 

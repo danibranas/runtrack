@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.muei.apm.runtrack.R
-import com.muei.apm.runtrack.models.Event
+import com.muei.apm.runtrack.data.models.Event
 
 class EventDetailsFragment : Fragment() {
 

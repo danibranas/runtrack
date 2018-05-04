@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MenuActivity"
+            android:name=".activities.EventsActivity"
             android:label="@string/title_activity_menu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.TrackingActivity" />
@@ -34,7 +34,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_api_key" />
 
-        <activity android:name=".activities.EventDetailsActivity"></activity>
+        <activity android:name=".activities.EventDetailsActivity" />
+        <activity android:name=".activities.DiagnosticsActivity"></activity>
     </application>
 
 </manifest>

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.EventDetailsActivity
-import com.muei.apm.runtrack.models.Event
+import com.muei.apm.runtrack.data.models.Event
 import java.text.SimpleDateFormat
 import java.util.*
 

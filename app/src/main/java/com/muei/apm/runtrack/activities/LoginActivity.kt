@@ -79,10 +79,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             return
         }
 
-        // TODO: retrieve account info from API
-        // account.getResult()
-
-        val intent = Intent(this, MenuActivity::class.java)
+        val intent = Intent(this, EventsActivity::class.java)
         intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
     }

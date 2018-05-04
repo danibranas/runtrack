@@ -1,6 +1,6 @@
-package com.muei.apm.runtrack.fixtures
+package com.muei.apm.runtrack.data.fixtures
 
-import com.muei.apm.runtrack.models.Event
+import com.muei.apm.runtrack.data.models.Event
 import java.util.*
 import kotlin.math.absoluteValue
 

@@ -12,7 +12,14 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.muei.apm.runtrack.services.LocationUpdatesService
 import com.muei.apm.runtrack.utils.LocationUtils
 
-class TrackingReceiver(private val getMap: () -> GoogleMap?): BroadcastReceiver() {
+class TrackingReceiver(private val getMap: () -> GoogleMap?, private val polylines: PolylineOptions): BroadcastReceiver() {
+    companion object {
+        fun createPolyline(): PolylineOptions {
+            return PolylineOptions()
+                    .geodesic(true)
+        }
+    }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val location = intent!!.getParcelableExtra<Location>(LocationUpdatesService.EXTRA_LOCATION)
         if (location != null) {
@@ -22,17 +29,7 @@ class TrackingReceiver(private val getMap: () -> GoogleMap?): BroadcastReceiver(
             val newPosition = LatLng(location.latitude, location.longitude)
 
             getMap()?.animateCamera(CameraUpdateFactory.newLatLngZoom(newPosition, 17f))
-            getMap()?.addPolyline(createPolyline(getMap()!!, newPosition))
+            polylines.add(newPosition)
         }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun createPolyline(map: GoogleMap, position: LatLng): PolylineOptions {
-        val currentPos = LatLng(map.myLocation.latitude, map.myLocation.longitude)
-
-        return PolylineOptions()
-                .geodesic(true)
-                .add(currentPos)
-                .add(position)
     }
 }

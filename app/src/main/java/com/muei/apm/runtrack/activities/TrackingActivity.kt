@@ -21,6 +21,8 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.muei.apm.runtrack.BuildConfig
@@ -28,6 +30,8 @@ import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.services.LocationUpdatesService
 import com.muei.apm.runtrack.utils.LocationUtils
 import com.google.android.gms.maps.MapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.muei.apm.runtrack.activities.tracking.TrackingReceiver
 import com.muei.apm.runtrack.utils.PausableChronometer
 
@@ -42,6 +46,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     // The BroadcastReceiver used to listen from broadcasts from the service.
     private var myReceiver: BroadcastReceiver? = null
+
+    private var mPolyline: PolylineOptions = TrackingReceiver.createPolyline()
 
     // A reference to the service used to get location updates.
     private var mService: LocationUpdatesService? = null
@@ -72,7 +78,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myReceiver = TrackingReceiver({ map })
+        myReceiver = TrackingReceiver({ map }, mPolyline)
         setContentView(R.layout.activity_tracking)
         supportActionBar?.hide()
 
@@ -80,10 +86,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         mapFragment.getMapAsync(this)
 
         // Check that the user hasn't revoked permissions by going to Settings.
-        if (LocationUtils.requestingLocationUpdates(this)) {
-            if (!checkPermissions()) {
-                requestPermissions()
-            }
+        if (!checkPermissions()) {
+            requestPermissions()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -152,12 +156,6 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         super.onStop()
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onMapReady(map: GoogleMap) {
-        map.isMyLocationEnabled = true
-        this.map = map
-    }
-
     /**
      * Returns the current state of the permissions needed.
      */
@@ -175,6 +173,29 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             } else {
                 mService!!.requestLocationUpdates()
             }
+        }
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        this.map = map
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            initMapLocation()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun initMapLocation() {
+        map?.isMyLocationEnabled = true
+        map?.addPolyline(mPolyline)
+
+        FusedLocationProviderClient(this).lastLocation.addOnSuccessListener {
+            val latLng = LatLng(it.latitude, it.longitude)
+            mPolyline.add(latLng)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17f)
+
+            map?.animateCamera(cameraUpdate)
         }
     }
 
@@ -215,9 +236,11 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             when {
                 grantResults.isEmpty() -> // If user interaction was interrupted, the permission request is cancelled and you
                     // receive empty arrays.
-                    Log.i(TAG, "UserEvent interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> // Permission was granted.
+                    Log.i(TAG, "Event interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {// Permission was granted.
                     mService!!.requestLocationUpdates()
+                    initMapLocation()
+                }
                 else -> {
                     // Permission denied.
                     setButtonsState(false)
