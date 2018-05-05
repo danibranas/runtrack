@@ -15,6 +15,8 @@ class EventsFixture {
                 "II Carrera de obstáculos"
         )
 
+        private var eventId: Long = 0
+
         fun generate(length: Int = 5): List<Event> {
             return (0..length.absoluteValue).map {
                 _ -> generateRandomEvent()
@@ -24,11 +26,18 @@ class EventsFixture {
         private fun generateRandomEvent(): Event {
             val event = Event(generateRandomId())
 
+            event.id = nextEventId()
             event.name = names[Random().nextInt(names.size)]
             event.distance = this.generateRandomFloat(50)
             event.date = generateRandomDate()
+            event.joined = Random().nextInt(10) % 2 == 0
 
             return event
+        }
+
+        private fun nextEventId(): Long {
+            eventId++
+            return eventId
         }
 
         private fun generateRandomFloat(bound: Int): Float {

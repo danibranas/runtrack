@@ -3,6 +3,7 @@ package com.muei.apm.runtrack.activities
 import android.Manifest
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Observer
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -33,6 +34,10 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.muei.apm.runtrack.activities.tracking.TrackingReceiver
+import com.muei.apm.runtrack.data.models.Event
+import com.muei.apm.runtrack.data.persistence.AppDatabase
+import com.muei.apm.runtrack.data.persistence.Service
+import com.muei.apm.runtrack.data.persistence.ServiceDb
 import com.muei.apm.runtrack.utils.PausableChronometer
 
 class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener,
@@ -61,6 +66,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var mapFragment: View? = null
     private var chrono: PausableChronometer? = null
 
+    // Storage
+    private val database: Service by lazy {
+        ServiceDb(AppDatabase.getInstance(this)!!, this)
+    }
+    private var event: Event? = null
+
     private val mServiceConnection = object: ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder = service as LocationUpdatesService.LocalBinder
@@ -81,6 +92,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         myReceiver = TrackingReceiver({ map }, mPolyline)
         setContentView(R.layout.activity_tracking)
         supportActionBar?.hide()
+
+        val eventId = intent.getLongExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+
+        database.getEventById(eventId).observe(this, Observer {
+            event = it
+        })
 
         val mapFragment = fragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
@@ -213,7 +230,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                     R.string.permission_rationale,
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.ok, {
-                        // Request permission
+                        // JsonRequest permission
                         ActivityCompat.requestPermissions(this@TrackingActivity,
                                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                                 REQUEST_PERMISSIONS_REQUEST_CODE)
@@ -221,7 +238,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                     .show()
         } else {
             Log.i(TAG, "Requesting permission")
-            // Request permission. It's possible this can be auto answered if device policy
+            // JsonRequest permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(this@TrackingActivity,

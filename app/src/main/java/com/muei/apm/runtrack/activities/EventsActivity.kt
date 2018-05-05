@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
@@ -25,7 +24,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.events.EventsStatePageAdapter
-import com.muei.apm.runtrack.fragments.*
 import com.muei.apm.runtrack.tasks.DownloadImageTask
 import kotlinx.android.synthetic.main.activity_events.*
 import kotlinx.android.synthetic.main.activity_events_bar_menu.*
@@ -68,9 +66,7 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_events -> {
-                loadInContainer(item, EventsActivityFragment::class.java)
-            }
+            R.id.nav_events -> {}
             R.id.nav_add_event -> {
                 onAddEventClick(findViewById(R.id.nav_add_event))
             }
@@ -119,42 +115,23 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 .setItems(options, {
                     _, which ->
                         when (which) {
-                            0 -> loadInContainer(null, TrackEventIdActivityFragment::class.java)
-                            1 -> showToast("TODO: track event by id")
+                            0 -> onTrackEvent(null)
+                            1 -> onScanEventClick(null)
                         }
                 })
                 .show()
     }
 
     fun onTrackEventIdClick(view: View) {
-        loadInContainer(null, TrackEventIdActivityFragment::class.java)
+        //loadInContainer(null, TrackEventIdActivityFragment::class.java)
     }
 
-    fun onTrackEvent(view: View) {
+    fun onTrackEvent(view: View?) {
         showToast("TODO: track event by id")
     }
 
     fun onScanEventClick(view: View?) {
         showToast("TODO: scan event QR")
-    }
-
-    private fun loadInContainer(item: MenuItem?, fragmentClass: Class<*>, addToBackStack: Boolean = true) {
-        val fragment = fragmentClass.newInstance() as Fragment
-
-        // Insert the fragment by replacing any existing fragment
-        /*val fragmentManager = supportFragmentManager
-        var transaction = fragmentManager.beginTransaction().replace(R.id.main_container, fragment)
-
-        if (addToBackStack) {
-            transaction = transaction.addToBackStack(null)
-        }
-
-        transaction.commit()
-
-        if (item != null) {
-            item.isChecked = true
-            title = item.title
-        }*/
     }
 
     private fun startContainer() {

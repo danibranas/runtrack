@@ -13,8 +13,6 @@ class EventConverter {
                 event.date = Date(e.startDate!!)
             }
 
-            event.joined = e.joined
-
             // TODO: ...
 
             return event
@@ -25,7 +23,7 @@ class EventConverter {
                     m.name,
                     m.date?.time
             )
-            eventEntity.joined = m.joined
+            eventEntity.id = m.id
             // TODO: ...
             return eventEntity
         }

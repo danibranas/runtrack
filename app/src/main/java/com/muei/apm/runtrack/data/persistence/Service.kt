@@ -1,5 +1,6 @@
 package com.muei.apm.runtrack.data.persistence
 
+import android.arch.lifecycle.LiveData
 import com.muei.apm.runtrack.data.models.Event
 import com.muei.apm.runtrack.data.models.Location
 
@@ -9,15 +10,15 @@ interface Service {
 
     fun unjoinEventById(eventId: Long)
 
-    fun getMyFinishedEvents(): List<Event>
+    fun getMyFinishedEvents(): LiveData<List<Event>>
 
-    fun getMyUpcomingEvents(): List<Event>
+    fun getMyUpcomingEvents(): LiveData<List<Event>>
 
-    fun getEventById(eventId: Long): Event?
+    fun getEventById(eventId: Long): LiveData<Event?>
 
-    fun getLocationsByEventId(eventId: Long): Location
+    fun getLocationsByEventId(eventId: Long): LiveData<List<Location>>
 
-    fun startEventTracking(eventId: Long): Boolean
+    fun startEventTracking(eventId: Long)
 
-    fun registerEventLocation(eventId: Long, location: Location): Boolean
+    fun registerEventLocation(eventId: Long, location: Location)
 }
