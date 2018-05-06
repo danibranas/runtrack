@@ -79,9 +79,10 @@ class ServiceDb(private val db: AppDatabase, private val owner: LifecycleOwner):
     }
 
     override fun registerEventLocation(eventId: Long, location: Location) {
-        val locationEntity = LocationConverter.modelToEntity(location)
-        locationEntity.eventId = eventId
-        db.locationDao().insert(locationEntity)
+        OperationTask<Unit>().execute({
+            val locationEntity = LocationConverter.modelToEntity(location, eventId)
+            db.locationDao().insert(locationEntity)
+        })
     }
 
     override fun getMyFinishedEvents(): LiveData<List<Event>> {

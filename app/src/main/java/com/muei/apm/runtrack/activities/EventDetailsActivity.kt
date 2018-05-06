@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.muei.apm.runtrack.R
@@ -22,6 +23,7 @@ class EventDetailsActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_EVENT_ID = "EXTRA_EVENT_ID"
         const val EXTRA_EVENT_FROM_TRACKING = "EXTRA_EVENT_FROM_TRACKING"
+        const val EXTRA_EVENT_NAME = "EXTRA_EVENT_NAME"
     }
 
     private val api: Api by lazy {
@@ -82,6 +84,13 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun setEventAsFinished() {
         this.joined = true
         findViewById<Button>(R.id.join_event_button).visibility = View.GONE
+
+        findViewById<ImageView>(R.id.event_map_preview).setOnClickListener {
+            val intent = Intent(this, EventMapActivity::class.java)
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_NAME, event?.name)
+            startActivity(intent)
+        }
     }
 
     private fun setEventAsJoined() {
@@ -105,6 +114,7 @@ class EventDetailsActivity : AppCompatActivity() {
         joinButton.visibility = View.VISIBLE
         joinButton.setOnClickListener {
             database.joinEvent(event!!)
+            showToast(resources.getText(R.string.event_joined))
             setEventAsJoined()
         }
     }

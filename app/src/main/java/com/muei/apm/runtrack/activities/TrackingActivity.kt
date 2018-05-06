@@ -33,11 +33,13 @@ import com.muei.apm.runtrack.services.LocationUpdatesService
 import com.muei.apm.runtrack.utils.LocationUtils
 import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.muei.apm.runtrack.activities.tracking.TrackingReceiver
 import com.muei.apm.runtrack.data.api.Api
 import com.muei.apm.runtrack.data.api.ApiFactory
 import com.muei.apm.runtrack.data.models.Event
+import com.muei.apm.runtrack.data.models.Location
 import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.data.persistence.Service
 import com.muei.apm.runtrack.data.persistence.ServiceDb
@@ -57,12 +59,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     // The BroadcastReceiver used to listen from broadcasts from the service.
     private var myReceiver: BroadcastReceiver? = null
 
-    private val mPolyline: PolylineOptions by lazy {
-        PolylineOptions()
-                .width(5f)
-                .color(Color.BLUE)
-                .geodesic(true)
-    }
+    private val route = arrayListOf<LatLng>()
 
     // A reference to the service used to get location updates.
     private var mService: LocationUpdatesService? = null
@@ -108,7 +105,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         myReceiver = TrackingReceiver({
             map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
-            mPolyline.points.add(it)
+            addRouteSegment(it)
         })
 
         setContentView(R.layout.activity_tracking)
@@ -134,6 +131,31 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                     .layoutTransition
                     .enableTransitionType(LayoutTransition.CHANGING)
         }
+    }
+
+    private fun addRouteSegment(point: LatLng) {
+        val lastPoint = route.lastOrNull()
+        val pointList = arrayListOf<LatLng>()
+
+        if (route.size == 1) {
+            map?.addMarker(MarkerOptions().position(point))
+        }
+
+        route.add(point)
+
+        if (lastPoint != null) {
+            pointList.add(lastPoint)
+            pointList.add(point)
+
+            map?.addPolyline(PolylineOptions()
+                    .width(20f)
+                    .color(Color.YELLOW)
+                    .geodesic(true)
+                    .addAll(pointList)
+            )
+        }
+
+        database.registerEventLocation(event!!.id, Location(point.latitude, point.longitude, Date()))
     }
 
     override fun onStart() {
@@ -242,11 +264,10 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     @SuppressLint("MissingPermission")
     private fun initMapLocation() {
         map?.isMyLocationEnabled = true
-        map?.addPolyline(mPolyline)
 
         FusedLocationProviderClient(this).lastLocation.addOnSuccessListener {
-            val latLng = LatLng(it.latitude + 0.5, it.longitude + 0.5) // FIXME: delete 0.5
-            mPolyline.points.add(latLng)
+            val latLng = LatLng(it.latitude, it.longitude)
+            addRouteSegment(latLng)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17f)
 
             map?.animateCamera(cameraUpdate)

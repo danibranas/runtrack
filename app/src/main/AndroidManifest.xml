@@ -44,6 +44,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.EventsActivity" />
         </activity>
+        <activity android:name=".activities.EventMapActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.EventDetailsActivity" />
+        </activity>
     </application>
 
 </manifest>

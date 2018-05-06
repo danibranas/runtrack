@@ -13,10 +13,11 @@ import com.muei.apm.runtrack.data.persistence.entities.event.EventEntity
         foreignKeys = [ ForeignKey(entity = EventEntity::class,
                 parentColumns = [ "id" ], childColumns = [ "eventId" ]) ])
 data class LocationEntity(
-        @ColumnInfo var latitude: Long,
-        @ColumnInfo var longitude: Long,
+        @ColumnInfo var latitude: Double,
+        @ColumnInfo var longitude: Double,
         @ColumnInfo var eventId: Long
         // ...
 ) {
     @PrimaryKey(autoGenerate = true) var id: Long = 0
+    @ColumnInfo var date: Long? = null
 }

@@ -29,6 +29,7 @@
 
     <string name="event_join_button">Join event</string>
     <string name="event_start_button">Start event!</string>
+    <string name="event_joined">Event joined!</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_events">EventsActivity</string>
