@@ -13,8 +13,10 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -127,11 +129,29 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
 
     fun onTrackEvent(view: View?) {
-        showToast("TODO: track event by id")
+        val eventIdInput = EditText(this)
+        eventIdInput.inputType = InputType.TYPE_CLASS_NUMBER
+
+        AlertDialog.Builder(this)
+                .setTitle(R.string.add_event_by_id)
+                .setView(eventIdInput)
+                .setPositiveButton(R.string.search_event, {
+                    _, _ -> goToEventDetailsActivity((eventIdInput.text.toString().toLong()))
+                })
+                .setNegativeButton(R.string.cancel, {
+                    d, _ -> d.dismiss()
+                })
+                .show()
     }
 
     fun onScanEventClick(view: View?) {
         showToast("TODO: scan event QR")
+    }
+
+    private fun goToEventDetailsActivity(eventId: Long?) {
+        val intent = Intent(this, EventDetailsActivity::class.java)
+        intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, eventId)
+        startActivity(intent)
     }
 
     private fun startContainer() {

@@ -53,6 +53,8 @@
     <string name="tracking_stop_question">Stop event tracking?</string>
     <string name="stop">Stop</string>
     <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    <string name="search_event">Buscar evento</string>
 
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
