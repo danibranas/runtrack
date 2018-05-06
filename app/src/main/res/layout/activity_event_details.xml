@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".activities.EventDetailsActivity">
 
     <ImageView
@@ -209,6 +210,7 @@
 
     <Button
         android:id="@+id/join_event_button"
+        android:visibility="gone"
         style="@android:style/Widget.Material.Button.Colored"
         android:layout_width="363dp"
         android:layout_height="58dp"
@@ -217,7 +219,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:text="Start event"
+        android:text="@string/event_join_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

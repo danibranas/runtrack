@@ -34,8 +34,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_api_key" />
 
-        <activity android:name=".activities.EventDetailsActivity" />
-        <activity android:name=".activities.DiagnosticsActivity"></activity>
+        <activity android:name=".activities.EventDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.EventsActivity" />
+        </activity>
+        <activity android:name=".activities.DiagnosticsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.EventsActivity" />
+        </activity>
     </application>
 
 </manifest>

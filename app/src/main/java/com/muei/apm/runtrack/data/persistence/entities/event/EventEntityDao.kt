@@ -30,6 +30,9 @@ interface EventEntityDao {
     @Query("UPDATE event SET joinDate = :joinDate WHERE id = :eventId AND joinDate IS NULL")
     fun joinEventById(eventId: Long, joinDate: Long)
 
+    @Query("UPDATE event SET endDate = :endDate WHERE id = :eventId")
+    fun finishEventById(eventId: Long, endDate: Long)
+
     @Query("DELETE FROM event WHERE id = :eventId AND joinDate IS NULL")
     fun deleteById(eventId: Long)
 

@@ -30,7 +30,6 @@ class EventsFixture {
             event.name = names[Random().nextInt(names.size)]
             event.distance = this.generateRandomFloat(50)
             event.date = generateRandomDate()
-            event.joined = Random().nextInt(10) % 2 == 0
 
             return event
         }

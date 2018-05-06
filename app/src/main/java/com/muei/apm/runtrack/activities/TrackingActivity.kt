@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -34,11 +35,15 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.muei.apm.runtrack.activities.tracking.TrackingReceiver
+import com.muei.apm.runtrack.data.api.Api
+import com.muei.apm.runtrack.data.api.ApiFactory
 import com.muei.apm.runtrack.data.models.Event
 import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.data.persistence.Service
 import com.muei.apm.runtrack.data.persistence.ServiceDb
 import com.muei.apm.runtrack.utils.PausableChronometer
+import java.util.*
+
 
 class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener,
         OnMapReadyCallback {
@@ -52,7 +57,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     // The BroadcastReceiver used to listen from broadcasts from the service.
     private var myReceiver: BroadcastReceiver? = null
 
-    private var mPolyline: PolylineOptions = TrackingReceiver.createPolyline()
+    private val mPolyline: PolylineOptions by lazy {
+        PolylineOptions()
+                .width(5f)
+                .color(Color.BLUE)
+                .geodesic(true)
+    }
 
     // A reference to the service used to get location updates.
     private var mService: LocationUpdatesService? = null
@@ -66,10 +76,16 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var mapFragment: View? = null
     private var chrono: PausableChronometer? = null
 
-    // Storage
+    private var backButtonDisabled = false
+
+    // Api and Storage
+    private val api: Api by lazy {
+        ApiFactory.getApi(this)
+    }
     private val database: Service by lazy {
         ServiceDb(AppDatabase.getInstance(this)!!, this)
     }
+
     private var event: Event? = null
 
     private val mServiceConnection = object: ServiceConnection {
@@ -89,11 +105,17 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myReceiver = TrackingReceiver({ map }, mPolyline)
+
+        myReceiver = TrackingReceiver({
+            map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
+            mPolyline.points.add(it)
+        })
+
         setContentView(R.layout.activity_tracking)
         supportActionBar?.hide()
 
-        val eventId = intent.getLongExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+        val eventId = savedInstanceState?.getLong(EventDetailsActivity.EXTRA_EVENT_ID)
+                ?: intent.getLongExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
 
         database.getEventById(eventId).observe(this, Observer {
             event = it
@@ -128,15 +150,17 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         mStartPauseTrackingButton!!.setOnClickListener({ toggleLocationUpdates() })
         mStopTrackingButton!!.setOnClickListener({
             AlertDialog.Builder(this)
-                    .setMessage("Stop event tracking?")
-                    .setPositiveButton("Stop", { _: DialogInterface, _: Int ->
-                        chrono!!.stop()
+                    .setMessage(R.string.tracking_stop_question)
+                    .setPositiveButton(R.string.stop, { _: DialogInterface, _: Int ->
                         chrono!!.reset()
                         mService!!.removeLocationUpdates()
-                        // TODO: Modify event in DB
+                        // Save on db and notify backend
+                        val results = calculateEventStats()
+                        database.finishEventTracking(event!!.id, Date(), results)
+                        api.finishEventById(event!!.id, results)
                         startEventDetailsActivity()
                     })
-                    .setNegativeButton("No", null)
+                    .setNegativeButton(R.string.no, null)
                     .show()
        })
 
@@ -173,6 +197,17 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         super.onStop()
     }
 
+    override fun onBackPressed() {
+        if (!backButtonDisabled) {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onSaveInstanceState(bundle: Bundle) {
+        super.onSaveInstanceState(bundle)
+        bundle.putLong(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
+    }
+
     /**
      * Returns the current state of the permissions needed.
      */
@@ -182,6 +217,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     }
 
     private fun toggleLocationUpdates() {
+        backButtonDisabled = true
+
         if (LocationUtils.requestingLocationUpdates(this)) {
             mService!!.removeLocationUpdates()
         } else {
@@ -208,8 +245,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         map?.addPolyline(mPolyline)
 
         FusedLocationProviderClient(this).lastLocation.addOnSuccessListener {
-            val latLng = LatLng(it.latitude, it.longitude)
-            mPolyline.add(latLng)
+            val latLng = LatLng(it.latitude + 0.5, it.longitude + 0.5) // FIXME: delete 0.5
+            mPolyline.points.add(latLng)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17f)
 
             map?.animateCamera(cameraUpdate)
@@ -320,8 +357,13 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private fun startEventDetailsActivity() {
         val intent = Intent(this, EventDetailsActivity::class.java)
         intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        // TODO: pass right id
-        intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+        intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
+        intent.putExtra(EventDetailsActivity.EXTRA_EVENT_FROM_TRACKING, true)
         startActivity(intent)
+    }
+
+    private fun calculateEventStats(): Event.Results {
+        // TODO: calculate events on event finish and return them
+        return Event.Results()
     }
 }

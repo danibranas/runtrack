@@ -239,7 +239,7 @@ class LocationUpdatesService : Service() {
                 Intent(this, TrackingActivity::class.java), 0)
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
+                .addAction(R.drawable.ic_launch, getString(R.string.view_event),
                         activityPendingIntent)
                 .setContentText(text)
                 .setContentTitle(LocationUtils.getLocationTitle(this))

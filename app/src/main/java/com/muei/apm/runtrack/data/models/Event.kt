@@ -9,11 +9,23 @@ data class Event(var id: Long) {
     var joined = false
     var coordinates: Coordinates? = null
     var date: Date? = null
+    var endDate: Date? = null
     var distance: Float? = null
     var imageUri: String? = null
     var users: Set<User>? = null
     var status = EventStatus.UNKNOWN
     var unit: EventUnit? = EventUnit.KM
+    var results: Results? = null
 
     data class Coordinates(var lat: Double, var long: Double)
+
+    data class Results(
+        // Exclusive joined
+        var avgSpeed: Long? = null,
+        var totalTime: Long? = null,
+        var avgPace: Long? = null,
+        var calories: Long? = null,
+        var positiveRamp: Long? = null,
+        var position: Int? = null
+    )
 }

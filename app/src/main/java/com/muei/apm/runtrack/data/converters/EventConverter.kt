@@ -1,6 +1,7 @@
 package com.muei.apm.runtrack.data.converters
 
 import com.muei.apm.runtrack.data.models.Event
+import com.muei.apm.runtrack.data.models.event.EventUnit
 import com.muei.apm.runtrack.data.persistence.entities.event.EventEntity
 import java.util.*
 
@@ -13,18 +14,66 @@ class EventConverter {
                 event.date = Date(e.startDate!!)
             }
 
-            // TODO: ...
+            event.name = e.name
+            event.distance = e.distance
+            event.imageUri = e.imageUri
+
+            if (e.endDate != null) {
+                event.endDate = Date(e.endDate!!)
+
+                event.results = Event.Results(
+                        e.avgSpeed,
+                        e.totalTime,
+                        e.avgPace,
+                        e.calories,
+                        e.positiveRamp,
+                        e.position
+                )
+            }
+
+            if (e.unit != null) {
+                event.unit = EventUnit.valueOf(e.unit!!)
+            }
+
+            if (e.coordinateLat != null) {
+                event.coordinates = Event.Coordinates(
+                        e.coordinateLat!!,
+                        e.coordinateLng!!
+                )
+            }
 
             return event
         }
 
         override fun modelToEntity(m: Event): EventEntity {
-            val eventEntity = EventEntity(
+            var eventEntity = EventEntity(
                     m.name,
                     m.date?.time
             )
             eventEntity.id = m.id
+            eventEntity.distance = m.distance
+            eventEntity.coordinateLat = m.coordinates?.lat
+            eventEntity.coordinateLng = m.coordinates?.long
+            eventEntity.endDate = m.endDate?.time
+
+            eventEntity = modelToEntityResults(m.results, eventEntity)
+
             // TODO: ...
+            return eventEntity
+        }
+
+        fun modelToEntityResults(r: Event.Results?, eventEntity: EventEntity): EventEntity {
+            if (r != null) {
+                with (r) {
+                    eventEntity.avgSpeed = avgSpeed
+                    eventEntity.totalTime = totalTime
+                    eventEntity.avgPace = avgPace
+                    eventEntity.calories = calories
+                    eventEntity.positiveRamp = positiveRamp
+                    eventEntity.position = position
+                }
+            }
+
             return eventEntity
         }
     }

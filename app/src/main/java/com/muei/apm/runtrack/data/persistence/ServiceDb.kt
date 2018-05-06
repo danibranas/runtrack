@@ -10,17 +10,28 @@ import com.muei.apm.runtrack.data.models.Event
 import com.muei.apm.runtrack.data.models.Location
 import com.muei.apm.runtrack.data.persistence.entities.event.EventEntity
 import com.muei.apm.runtrack.data.persistence.entities.location.LocationEntity
+import com.muei.apm.runtrack.tasks.OperationTask
 import java.util.Date
 
 
 class ServiceDb(private val db: AppDatabase, private val owner: LifecycleOwner): Service {
 
-    override fun joinEvent(event: Event) {
-        db.eventDao().insert(EventConverter.modelToEntity(event))
+    override fun joinEvent(event: Event): LiveData<Boolean> {
+        val data = MutableLiveData<Boolean>()
+        OperationTask<Unit>().execute({
+            db.eventDao().insert(EventConverter.modelToEntity(event))
+            data.postValue(true)
+        })
+        return data
     }
 
-    override fun unjoinEventById(eventId: Long) {
-        db.eventDao().deleteById(eventId)
+    override fun unjoinEventById(eventId: Long): LiveData<Boolean> {
+        val data = MutableLiveData<Boolean>()
+        OperationTask<Unit>().execute({
+            db.eventDao().deleteById(eventId)
+            data.postValue(true)
+        })
+        return data
     }
 
     override fun getLocationsByEventId(eventId: Long): LiveData<List<Location>> {
@@ -33,13 +44,38 @@ class ServiceDb(private val db: AppDatabase, private val owner: LifecycleOwner):
         return data
     }
 
-    override fun startEventTracking(eventId: Long) {
+    override fun startEventTracking(eventId: Long): LiveData<Boolean> {
+        val data = MutableLiveData<Boolean>()
         db.eventDao().findById(eventId).observe(owner, Observer {
             if (it != null) {
                 it.joinDate = Date().time
                 db.eventDao().update(it)
+                data.postValue(true)
+                return@Observer
             }
+            data.postValue(false)
         })
+        return data
+    }
+
+    override fun finishEventTracking(eventId: Long, date: Date, results: Event.Results): LiveData<Boolean> {
+        val data = MutableLiveData<Boolean>()
+        db.eventDao()
+                .findById(eventId)
+                .observe(owner, Observer {
+                    if (it != null) {
+                        OperationTask<Unit>().execute({
+                            val event = EventConverter.modelToEntityResults(results, it)
+                            event.endDate = date.time
+                            db.eventDao().update(event)
+                            data.postValue(true)
+                        })
+                    } else {
+                        db.eventDao().finishEventById(eventId, date.time)
+                        data.postValue(true)
+                    }
+                })
+        return data
     }
 
     override fun registerEventLocation(eventId: Long, location: Location) {

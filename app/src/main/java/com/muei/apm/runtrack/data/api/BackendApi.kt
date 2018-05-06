@@ -51,4 +51,8 @@ class BackendApi(context: Context): Api {
     override fun joinEvent(eventId: Long, userId: Long): ApiResponse<Event?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun finishEventById(eventId: Long, results: Event.Results?): ApiResponse<Any> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

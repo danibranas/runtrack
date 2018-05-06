@@ -12,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import android.view.WindowManager
 import android.os.Build
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import com.muei.apm.runtrack.R
