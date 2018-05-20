@@ -20,7 +20,7 @@ class EventUtils {
         }
 
         fun formatDistance(event: Event): String {
-            return "${event.distance} ${event.unit}"
+            return "${event.distance} ${event.unit.toString()}"
         }
     }
 }

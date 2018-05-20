@@ -156,6 +156,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         }
 
         database.registerEventLocation(event!!.id, Location(point.latitude, point.longitude, Date()))
+        // TODO: update distance
     }
 
     override fun onStart() {
