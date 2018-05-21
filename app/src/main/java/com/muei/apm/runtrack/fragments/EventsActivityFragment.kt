@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.muei.apm.runtrack.R
+import com.muei.apm.runtrack.activities.EventsActivity
 import com.muei.apm.runtrack.data.api.Api
 import com.muei.apm.runtrack.data.api.ApiFactory
 import com.muei.apm.runtrack.data.models.Event
@@ -100,6 +101,8 @@ class EventsActivityFragment : Fragment() {
 
         val fabButton = view.findViewById<FloatingActionButton>(R.id.fab)
         val appBar = view.findViewById<AppBarLayout?>(R.id.events_app_bar)
+
+        fabButton.setOnClickListener((activity as EventsActivity)::onAddEventClick)
 
         eventsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

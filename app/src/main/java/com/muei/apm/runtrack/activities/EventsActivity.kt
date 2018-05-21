@@ -27,8 +27,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.events.EventsStatePageAdapter
 import com.muei.apm.runtrack.tasks.DownloadImageTask
-import kotlinx.android.synthetic.main.activity_events.*
-import kotlinx.android.synthetic.main.activity_events_bar_menu.*
+import kotlinx.android.synthetic.main.activity_events.drawer_layout
+import kotlinx.android.synthetic.main.activity_events.nav_view
+import kotlinx.android.synthetic.main.activity_events_bar_menu.toolbar
 
 
 class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {

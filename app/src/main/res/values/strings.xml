@@ -54,7 +54,7 @@
     <string name="stop">Stop</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
-    <string name="search_event">Buscar evento</string>
+    <string name="search_event">Search event</string>
 
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
@@ -107,4 +107,12 @@
 
 \n\nIf you have any questions about this Agreement, please contact us.
 </string>
+    <string name="event_distance">Distance</string>
+    <string name="event_start_date">Starts</string>
+    <string name="event_prize">Prize</string>
+    <string name="event_map_preview_desc">Event Map Preview</string>
+    <string name="nav_account_image_desc">Account image</string>
+    <string name="app_slogan">following your results</string>
+    <string name="button_sign_in">Sign In</string>
+    <string name="event_inscribed">inscribed</string>
 </resources>

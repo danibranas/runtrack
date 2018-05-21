@@ -1,7 +1,7 @@
 package com.muei.apm.runtrack.utils
 
 import android.content.Context
-import android.location.Location;
+import android.location.Location
 import android.preference.PreferenceManager
 import java.text.DateFormat
 import java.util.*

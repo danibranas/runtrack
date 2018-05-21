@@ -3,7 +3,6 @@ package com.muei.apm.runtrack.activities.events
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.app.FragmentStatePagerAdapter
 import com.muei.apm.runtrack.fragments.EventsActivityFragment
 
 class EventsStatePageAdapter(fm: FragmentManager): FragmentPagerAdapter(fm) {

@@ -13,7 +13,8 @@
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/main_background"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="ContentDescription" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,7 +34,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.337"
-            app:srcCompat="@drawable/app_logo_white" />
+            app:srcCompat="@drawable/app_logo_white"
+            android:contentDescription="@string/app_name" />
 
         <TextView
             android:id="@+id/main_subtitle"
@@ -44,7 +46,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="following your results"
+            android:text="@string/app_slogan"
             android:textColor="#ffffff"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +62,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="68dp"
-            android:text="Sign In"
+            android:text="@string/button_sign_in"
             app:buttonSize="wide"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
