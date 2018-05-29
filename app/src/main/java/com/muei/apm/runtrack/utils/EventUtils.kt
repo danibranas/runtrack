@@ -22,5 +22,13 @@ class EventUtils {
         fun formatDistance(event: Event): String {
             return "${event.distance} ${event.unit.toString()}"
         }
+
+        fun formatDouble(num: Double): String {
+            if (num.isInfinite()) {
+                return "∞"
+            }
+
+            return "%.2f".format(num)
+        }
     }
 }

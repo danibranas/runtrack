@@ -23,6 +23,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -43,7 +44,9 @@ import com.muei.apm.runtrack.data.models.Location
 import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.data.persistence.Service
 import com.muei.apm.runtrack.data.persistence.ServiceDb
+import com.muei.apm.runtrack.utils.EventUtils
 import com.muei.apm.runtrack.utils.PausableChronometer
+import com.muei.apm.runtrack.utils.TrackingUtils
 import java.util.*
 
 
@@ -72,8 +75,16 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var mStopTrackingButton: FloatingActionButton? = null
     private var mapFragment: View? = null
     private var chrono: PausableChronometer? = null
+    private var distanceMeasure: TextView? = null
+    private var avgPaceMeasure: TextView? = null
+    private var paceMeasure: TextView? = null
+    private var distanceMeasureUnit: TextView? = null
+    private var paceMeasureUnit: TextView? = null
 
     private var backButtonDisabled = false
+
+    // Control vars
+    private var lastDistance: Double = 0.0
 
     // Api and Storage
     private val api: Api by lazy {
@@ -106,6 +117,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         myReceiver = TrackingReceiver({
             map?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
             addRouteSegment(it)
+            updateStats(it)
+            // TODO: Update
         })
 
         setContentView(R.layout.activity_tracking)
@@ -159,6 +172,27 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         // TODO: update distance
     }
 
+    private fun updateStats(point: LatLng) {
+        database.getLocationsByEventId(event!!.id).observe(this, Observer {
+            val totalDistance = TrackingUtils.calculateDistance(it!!)
+
+            if (lastDistance > totalDistance) {
+                // A next async-updateStats has been set before this one
+                return@Observer
+            }
+
+            val previousLocation = it.takeLast(2).firstOrNull()
+            val inmediatePace = TrackingUtils.calculatePace(previousLocation, Location(point))
+
+            val firstPoint = it.firstOrNull()
+            val avgPace = TrackingUtils.calculatePace(firstPoint, Location(point), totalDistance)
+
+            distanceMeasure?.text = EventUtils.formatDouble(TrackingUtils.distanceToKm(totalDistance))
+            avgPaceMeasure?.text = EventUtils.formatDouble(avgPace)
+            paceMeasure?.text = EventUtils.formatDouble(inmediatePace)
+        })
+    }
+
     override fun onStart() {
         super.onStart()
 
@@ -168,6 +202,10 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         mStartPauseTrackingButton = findViewById(R.id.start_pause_tracking_button)
         mStopTrackingButton = findViewById(R.id.stop_tracking_button)
         chrono = PausableChronometer(findViewById(R.id.chronometer))
+        distanceMeasure = findViewById(R.id.distance_measure)
+        paceMeasure = findViewById(R.id.pace_measure)
+        distanceMeasureUnit = findViewById(R.id.pace_measure_unit)
+        paceMeasureUnit = findViewById(R.id.pace_measure_unit)
         mapFragment = findViewById(R.id.map)
 
         mStartPauseTrackingButton!!.setOnClickListener({ toggleLocationUpdates() })
@@ -352,6 +390,10 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private fun setButtonsState(requestingLocationUpdates: Boolean) {
         if (requestingLocationUpdates) {
             mStopTrackingButton!!.visibility = View.VISIBLE
+            paceMeasure!!.visibility = View.VISIBLE
+            paceMeasureUnit!!.visibility = View.VISIBLE
+            distanceMeasure!!.visibility = View.VISIBLE
+            distanceMeasureUnit!!.visibility = View.VISIBLE
             mStartPauseTrackingButton!!.setImageResource(R.drawable.ic_pause_icon)
             chrono!!.chronometer?.visibility = View.VISIBLE
             chrono!!.start()

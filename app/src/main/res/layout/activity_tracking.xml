@@ -33,6 +33,58 @@
         app:layout_constraintStart_toStartOf="@+id/map"
         app:layout_constraintTop_toBottomOf="@+id/map" />
 
+    <TextView
+        android:id="@+id/distance_measure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="0,50"
+        android:textSize="40sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chronometer"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/distance_measure_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="@string/distance_measure_km"
+        android:textSize="14sp"
+        android:textColor="#AAA"
+        app:layout_constraintEnd_toEndOf="@+id/distance_measure"
+        app:layout_constraintTop_toBottomOf="@+id/distance_measure" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/pace_measure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="40sp"
+        android:text="4:50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chronometer"
+        android:layout_marginRight="8dp"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/pace_measure_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pace_measure_minkm"
+        android:textColor="#AAA"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/pace_measure"
+        app:layout_constraintTop_toBottomOf="@+id/pace_measure" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/start_pause_tracking_button"
         android:layout_width="70dp"

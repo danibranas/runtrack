@@ -115,4 +115,6 @@
     <string name="app_slogan">following your results</string>
     <string name="button_sign_in">Sign In</string>
     <string name="event_inscribed">inscribed</string>
+    <string name="pace_measure_minkm">min/km</string>
+    <string name="distance_measure_km">km</string>
 </resources>
