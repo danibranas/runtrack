@@ -3,6 +3,7 @@ package com.muei.apm.runtrack.utils
 import com.muei.apm.runtrack.data.models.Location
 import org.junit.Assert.*
 import org.junit.Test
+import java.util.*
 
 class TrackingUtilsTest {
     private val pointA = Location(38.898556, -77.037852)
@@ -58,15 +59,47 @@ class TrackingUtilsTest {
     }
 
     @Test
-    fun speedToPace() {
-        val delta = 0.01
-        val speedA = 60000.0 // m/s = 60 km/h
-        assertEquals(1.0, TrackingUtils.speedToPace(speedA), delta)
+    fun calculateSpeed() {
+        val calendar = Calendar.getInstance()
+        val now = calendar.time.clone() as Date
 
-        val speedB = 12000.0 // m/s
+        calendar.add(Calendar.HOUR, -1)
+        val before = calendar.time.clone() as Date
+
+        val pointA = Location(46.89803, 2.60693, before)
+        val pointB = Location(46.90266, 2.61826, now)
+
+        // There's ~1km from A to B
+        assertEquals(1000.0/3600, TrackingUtils.calculateSpeed(pointA, pointB), 0.001)
+    }
+
+    @Test
+    fun calculatePace() {
+        val calendar = Calendar.getInstance()
+        val now = calendar.time.clone() as Date
+
+        calendar.add(Calendar.HOUR, -1)
+        val before = calendar.time.clone() as Date
+
+        val pointA = Location(46.89803, 2.60693, before)
+        val pointB = Location(46.90266, 2.61826, now)
+        val pace = TrackingUtils.calculatePace(pointA, pointB)
+
+        // There's ~1km from A to B
+        assertEquals(TrackingUtils.speedToPace(1000.0/3600), pace, 0.2)
+    }
+
+    @Test
+    fun speedToPace() {
+        val delta = 0.001
+
+        val speedA = 2.77778 // m/s = 60 km/h
+        assertEquals(6.0, TrackingUtils.speedToPace(speedA), delta)
+
+        val speedB = 3.33333333 // m/s
         assertEquals(5.0, TrackingUtils.speedToPace(speedB), delta)
 
-        val speedC = 17400.0 // m/s
-        assertEquals(3.45, TrackingUtils.speedToPace(speedC), delta)
+        val speedC = 5.55556 // m/s
+        assertEquals(3.0, TrackingUtils.speedToPace(speedC), delta)
     }
 }

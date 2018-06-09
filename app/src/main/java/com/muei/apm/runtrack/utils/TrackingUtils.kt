@@ -64,12 +64,17 @@ class TrackingUtils {
          * speed in meters/seconds.
          */
         fun calculateSpeed(pointA: Location?, pointB: Location?, distance: Double): Double {
-            if (distance <= 0.0 || pointA == null || pointB == null || (pointB.date.time - pointA.date.time) < DELTA_M) {
-                return 0.0
+            return if (!hasMovement(pointA, pointB, distance)) {
+                0.0
+            } else {
+                val time = Math.abs(pointB!!.date.time - pointA!!.date.time) / 1000 // seconds
+                distance / time
             }
+        }
 
-            val time = Math.abs(pointB.date.time - pointA.date.time) / 1000 // seconds
-            return distance/time
+        private fun hasMovement(pointA: Location?, pointB: Location?, distance: Double): Boolean {
+            return distance > 0.0 && pointA != null && pointB != null &&
+                    (pointB.date.time - pointA.date.time) >= DELTA_M
         }
 
         /**
@@ -93,7 +98,7 @@ class TrackingUtils {
          */
         fun speedToPace(v: Double): Double {
             return if (v > 0.0) {
-                (1 / v) * 60 * 1000
+                (1 / v) * 1000 / 60
             } else {
                 Double.POSITIVE_INFINITY
             }
