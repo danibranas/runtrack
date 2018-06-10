@@ -31,9 +31,7 @@ import kotlinx.android.synthetic.main.activity_events.drawer_layout
 import kotlinx.android.synthetic.main.activity_events.nav_view
 import kotlinx.android.synthetic.main.activity_events_bar_menu.toolbar
 
-
 class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
     private var account: GoogleSignInAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,12 +91,12 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
             R.id.nav_sign_out -> {
                 AlertDialog.Builder(this)
                         .setMessage(R.string.sign_out_confirm)
-                        .setPositiveButton("Sign out", { _: DialogInterface, _: Int ->
+                        .setPositiveButton(R.string.menu_sign_out, { _: DialogInterface, _: Int ->
                             getGoogleSignInClient().signOut().addOnSuccessListener {
                                 goToLoginActivity()
                             }
                         })
-                        .setNegativeButton("No", null)
+                        .setNegativeButton(getString(R.string.no), null)
                         .show()
             }
         }
@@ -146,7 +144,8 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
 
     fun onScanEventClick(view: View?) {
-        showToast("TODO: scan event QR")
+        val intent = Intent(applicationContext, BarcodeCaptureActivity::class.java)
+        startActivity(intent)
     }
 
     private fun goToEventDetailsActivity(eventId: Long?) {
