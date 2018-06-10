@@ -11,6 +11,18 @@ class PausableChronometer(val chronometer: Chronometer?) {
         chronometer?.start()
     }
 
+    fun getTime(): Long {
+        if (chronometer != null) {
+            return chronometer.base - SystemClock.elapsedRealtime()
+        }
+
+        return 0
+    }
+
+    fun setTime(time: Long) {
+        timeWhenStopped = time
+    }
+
     fun stop() {
         chronometer?.stop()
 

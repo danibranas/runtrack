@@ -110,5 +110,19 @@ class TrackingUtils {
         fun distanceToKm(d: Double): Double {
             return d / 1000
         }
+
+        fun calculateDistancePercent(goalDistance: Float, realDistance: Double): Double {
+            if (realDistance >= goalDistance) {
+                return 1.0
+            }
+
+            val distancePercent = realDistance / goalDistance
+
+            if (distancePercent.isNaN()) {
+                return 0.0
+            }
+
+            return distancePercent
+        }
     }
 }

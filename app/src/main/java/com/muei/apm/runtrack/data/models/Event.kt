@@ -16,6 +16,7 @@ data class Event(var id: Long) {
     var status = EventStatus.UNKNOWN
     var unit: EventUnit? = EventUnit.KM
     var results: Results? = null
+    var route: List<Location>? = null
 
     data class Coordinates(var lat: Double, var long: Double)
 

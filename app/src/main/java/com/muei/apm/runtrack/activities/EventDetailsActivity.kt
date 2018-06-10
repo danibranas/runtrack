@@ -39,6 +39,7 @@ class EventDetailsActivity : AppCompatActivity() {
     private var joined: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_details)
 

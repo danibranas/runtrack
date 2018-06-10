@@ -13,6 +13,8 @@ import org.json.JSONObject
 
 class BackendApi(context: Context): Api {
     companion object {
+        const val BASE_URL = "https://enigmatic-brook-93035.herokuapp.com"
+
         @Volatile
         private var INSTANCE: BackendApi? = null
         fun getInstance(context: Context) =
@@ -27,21 +29,12 @@ class BackendApi(context: Context): Api {
         Volley.newRequestQueue(context.applicationContext)
     }
 
-    fun <T> addToRequestQueue(req: Request<T>) {
+    private fun <T> addToRequestQueue(req: Request<T>) {
         requestQueue.add(req)
     }
 
     override fun findEventById(eventId: Long): ApiResponse<Event?> {
-        return BackendApiResponse({
-            onSuccess, onError ->
-                val req = JsonObjectRequest(Request.Method.GET, "http://google.com", null,
-                        Response.Listener<JSONObject> {
-                            // TODO: Convert object to event
-                            onSuccess(Event(eventId))
-                        },
-                        Response.ErrorListener { error -> onError?.invoke(error.message!!) })
-                addToRequestQueue(req)
-        })
+        return getRequest("/events/$eventId", { _ -> Event(eventId) }) // FIXME
     }
 
     override fun fetchNearEvents(lat: Long, lng: Long): ApiResponse<List<Event>> {
@@ -54,5 +47,15 @@ class BackendApi(context: Context): Api {
 
     override fun finishEventById(eventId: Long, results: Event.Results?): ApiResponse<Any> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun <T> getRequest(url: String, converter: (e: JSONObject) -> T): BackendApiResponse<T> {
+        return BackendApiResponse({
+            onSuccess, onError ->
+            val req = JsonObjectRequest(Request.Method.GET, "$BASE_URL$url", null,
+                    Response.Listener<JSONObject> { onSuccess(converter(it)) },
+                    Response.ErrorListener { error -> onError?.invoke(error.message!!) })
+            addToRequestQueue(req)
+        })
     }
 }

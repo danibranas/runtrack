@@ -3,7 +3,6 @@ package com.muei.apm.runtrack.fragments
 import android.arch.lifecycle.Observer
 import android.support.v4.app.Fragment
 import android.os.Bundle
-import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -100,20 +99,7 @@ class EventsActivityFragment : Fragment() {
         }
 
         val fabButton = view.findViewById<FloatingActionButton>(R.id.fab)
-        val appBar = view.findViewById<AppBarLayout?>(R.id.events_app_bar)
 
         fabButton.setOnClickListener((activity as EventsActivity)::onAddEventClick)
-
-        eventsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy < 0 && fabButton.isShown) {
-                    fabButton.visibility = View.GONE
-                    appBar?.visibility = View.VISIBLE
-                } else if (dy > 0 ) {
-                    fabButton.visibility = View.VISIBLE
-                    appBar?.visibility = View.GONE
-                }
-            }
-        })
     }
 }

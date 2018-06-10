@@ -23,6 +23,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -48,6 +49,7 @@ import com.muei.apm.runtrack.utils.EventUtils
 import com.muei.apm.runtrack.utils.PausableChronometer
 import com.muei.apm.runtrack.utils.TrackingUtils
 import java.util.*
+import kotlin.math.roundToInt
 
 
 class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener,
@@ -57,6 +59,9 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         // Used in checking for runtime permissions.
         const val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+
+        const val EXTRA_CHRONO_TIME = "EXTRA_CHRONO_TIME"
+        const val EXTRA_CURRENT_PROGRESS = "EXTRA_CURRENT_PROGRESS"
     }
 
     // The BroadcastReceiver used to listen from broadcasts from the service.
@@ -80,11 +85,16 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var paceMeasure: TextView? = null
     private var distanceMeasureUnit: TextView? = null
     private var paceMeasureUnit: TextView? = null
+    private var progressBar: ProgressBar? = null
 
     private var backButtonDisabled = false
 
     // Control vars
     private var lastDistance: Double = 0.0
+
+    // Restore vars
+    private var chronoTime: Long = 0
+    private var currentProgress: Int = 0
 
     // Api and Storage
     private val api: Api by lazy {
@@ -112,6 +122,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var map: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         myReceiver = TrackingReceiver({
@@ -126,6 +137,8 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
         val eventId = savedInstanceState?.getLong(EventDetailsActivity.EXTRA_EVENT_ID)
                 ?: intent.getLongExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+        chronoTime = savedInstanceState?.getLong(TrackingActivity.EXTRA_CHRONO_TIME) ?: 0
+        currentProgress = savedInstanceState?.getInt(TrackingActivity.EXTRA_CURRENT_PROGRESS) ?: 0
 
         database.getEventById(eventId).observe(this, Observer {
             event = it
@@ -183,6 +196,7 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
             val previousLocation = it.takeLast(2).firstOrNull()
             val inmediatePace = TrackingUtils.calculatePace(previousLocation, Location(point))
+            val distancePercent = TrackingUtils.calculateDistancePercent(event!!.distance!!, totalDistance)
 
             val firstPoint = it.firstOrNull()
             val avgPace = TrackingUtils.calculatePace(firstPoint, Location(point), totalDistance)
@@ -190,6 +204,10 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             distanceMeasure?.text = EventUtils.formatDouble(TrackingUtils.distanceToKm(totalDistance))
             avgPaceMeasure?.text = EventUtils.formatDouble(avgPace)
             paceMeasure?.text = EventUtils.formatDouble(inmediatePace)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                progressBar?.setProgress(distancePercent.roundToInt(), true)
+            }
         })
     }
 
@@ -204,9 +222,12 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         chrono = PausableChronometer(findViewById(R.id.chronometer))
         distanceMeasure = findViewById(R.id.distance_measure)
         paceMeasure = findViewById(R.id.pace_measure)
-        distanceMeasureUnit = findViewById(R.id.pace_measure_unit)
+        distanceMeasureUnit = findViewById(R.id.distance_measure_unit)
         paceMeasureUnit = findViewById(R.id.pace_measure_unit)
         mapFragment = findViewById(R.id.map)
+        progressBar = findViewById(R.id.track_progress_bar)
+
+        chrono!!.setTime(chronoTime)
 
         mStartPauseTrackingButton!!.setOnClickListener({ toggleLocationUpdates() })
         mStopTrackingButton!!.setOnClickListener({
@@ -266,7 +287,23 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onSaveInstanceState(bundle: Bundle) {
         super.onSaveInstanceState(bundle)
-        bundle.putLong(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
+
+        bundle.run {
+            putLong(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
+            putLong(TrackingActivity.EXTRA_CHRONO_TIME, chrono!!.getTime())
+            putInt(TrackingActivity.EXTRA_CURRENT_PROGRESS, progressBar?.progress ?: 0)
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val eventId = savedInstanceState?.getLong(EventDetailsActivity.EXTRA_EVENT_ID)
+                ?: intent.getLongExtra(EventDetailsActivity.EXTRA_EVENT_ID, -1)
+        chrono?.setTime(savedInstanceState?.getLong(TrackingActivity.EXTRA_CHRONO_TIME) ?: 0)
+
+        database.getEventById(eventId).observe(this, Observer {
+            event = it
+        })
     }
 
     /**
@@ -395,6 +432,11 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             distanceMeasure!!.visibility = View.VISIBLE
             distanceMeasureUnit!!.visibility = View.VISIBLE
             mStartPauseTrackingButton!!.setImageResource(R.drawable.ic_pause_icon)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                progressBar!!.visibility = View.VISIBLE
+            }
+
             chrono!!.chronometer?.visibility = View.VISIBLE
             chrono!!.start()
             doSetMarginBottomDp(mapFragment, 300)
