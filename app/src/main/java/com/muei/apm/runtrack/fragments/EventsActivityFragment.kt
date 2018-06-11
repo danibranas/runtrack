@@ -83,17 +83,20 @@ class EventsActivityFragment : Fragment() {
             Mode.MODE_NEAR_EVENTS -> {
                 val a = api.fetchNearEvents(0, 0)
                 a.onResult(fun (list: List<Event>) {
+                    setViewByContent(list, view)
                     eventsRecyclerView.adapter = EventsRecyclerAdapter(list, context!!)
                 })
             }
             Mode.MODE_MY_EVENTS -> {
                 storage.getMyFinishedEvents().observe(this, Observer<List<Event>> {
-                    eventsRecyclerView.adapter = EventsRecyclerAdapter(it!!, context!!)
+                    setViewByContent(it!!, view)
+                    eventsRecyclerView.adapter = EventsRecyclerAdapter(it, context!!)
                 })
             }
             Mode.MODE_UPCOMING_EVENTS -> {
                 storage.getMyUpcomingEvents().observe(this, Observer<List<Event>> {
-                    eventsRecyclerView.adapter = EventsRecyclerAdapter(it!!, context!!)
+                    setViewByContent(it!!, view)
+                    eventsRecyclerView.adapter = EventsRecyclerAdapter(it, context!!)
                 })
             }
         }
@@ -101,5 +104,14 @@ class EventsActivityFragment : Fragment() {
         val fabButton = view.findViewById<FloatingActionButton>(R.id.fab)
 
         fabButton.setOnClickListener((activity as EventsActivity)::onAddEventClick)
+    }
+
+    private fun setViewByContent(list: List<*>, view: View) {
+        val noEvents = view.findViewById<ViewGroup>(R.id.content_no_events)
+        if (list.isEmpty()) {
+            noEvents.visibility = View.VISIBLE
+            return
+        }
+        noEvents.visibility = View.GONE
     }
 }

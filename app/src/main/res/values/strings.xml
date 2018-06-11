@@ -30,6 +30,8 @@
     <string name="event_join_button">Join event</string>
     <string name="event_start_button">Start event!</string>
     <string name="event_joined">Event joined!</string>
+    <string name="events_no_events">There are not events here. Join some event and run!</string>
+    <string name="events_no_near_events">There are not near events :(</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_events">EventsActivity</string>
@@ -117,4 +119,7 @@
     <string name="event_inscribed">inscribed</string>
     <string name="pace_measure_minkm">min/km</string>
     <string name="distance_measure_km">km</string>
+    <string name="event_description_title">Description</string>
+    <string name="share_on_twitter">Share on Twitter</string>
+    <string name="event_people_number">%d inscribed</string>
 </resources>

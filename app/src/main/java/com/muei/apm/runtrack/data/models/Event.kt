@@ -6,13 +6,14 @@ import java.util.*
 
 data class Event(var id: Long) {
     var name: String = ""
+    var description: String = ""
     var joined = false
     var coordinates: Coordinates? = null
     var date: Date? = null
     var endDate: Date? = null
     var distance: Float? = null
     var imageUri: String? = null
-    var users: Set<User>? = null
+    var users: Int = 0
     var status = EventStatus.UNKNOWN
     var unit: EventUnit? = EventUnit.KM
     var results: Results? = null

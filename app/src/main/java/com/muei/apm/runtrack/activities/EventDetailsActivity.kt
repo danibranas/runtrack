@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.data.persistence.Service
 import com.muei.apm.runtrack.data.persistence.ServiceDb
 import com.muei.apm.runtrack.utils.EventUtils
+import com.muei.apm.runtrack.utils.SocialMediaUtils
 
 class EventDetailsActivity : AppCompatActivity() {
 
@@ -67,6 +69,22 @@ class EventDetailsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.event_distance).text = EventUtils.formatDistance(event)
         findViewById<TextView>(R.id.event_date_day).text = EventUtils.getDay(event)
         findViewById<TextView>(R.id.event_date_month).text = EventUtils.getMonthName(event)
+        findViewById<TextView>(R.id.event_description).text = event.description
+        findViewById<TextView>(R.id.people_text).text = String.format(
+                resources.getString(R.string.event_people_number), event.users)
+
+        findViewById<ImageButton>(R.id.share_twitter_button).setOnClickListener {
+            val tweet = SocialMediaUtils.getTwitterIntent(this,
+                    "Hey! ${event.name} is awesome. I'll run it on Runtrack!")
+            startActivity(tweet)
+        }
+
+        findViewById<ImageView>(R.id.event_map_preview).setOnClickListener {
+            val intent = Intent(this, EventMapActivity::class.java)
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event.id)
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_NAME, event.name)
+            startActivity(intent)
+        }
         // ...
 
         database.getEventById(event.id).observe(this, Observer {
@@ -85,13 +103,6 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun setEventAsFinished() {
         this.joined = true
         findViewById<Button>(R.id.join_event_button).visibility = View.GONE
-
-        findViewById<ImageView>(R.id.event_map_preview).setOnClickListener {
-            val intent = Intent(this, EventMapActivity::class.java)
-            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event?.id ?: -1)
-            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_NAME, event?.name)
-            startActivity(intent)
-        }
     }
 
     private fun setEventAsJoined() {
