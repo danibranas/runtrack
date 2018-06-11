@@ -122,4 +122,8 @@
     <string name="event_description_title">Description</string>
     <string name="share_on_twitter">Share on Twitter</string>
     <string name="event_people_number">%d inscribed</string>
+    <string name="speed_title">Speed</string>
+    <string name="event_time">Time</string>
+    <string name="event_pace">Pace</string>
+    <string name="event_avg_speed">Avg speed</string>
 </resources>

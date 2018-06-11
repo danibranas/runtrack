@@ -5,6 +5,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -19,6 +20,11 @@ import com.muei.apm.runtrack.data.persistence.Service
 import com.muei.apm.runtrack.data.persistence.ServiceDb
 import com.muei.apm.runtrack.utils.EventUtils
 import com.muei.apm.runtrack.utils.SocialMediaUtils
+import com.jjoe64.graphview.series.LineGraphSeries
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.series.DataPoint
+import com.muei.apm.runtrack.utils.TrackingUtils
+
 
 class EventDetailsActivity : AppCompatActivity() {
 
@@ -103,6 +109,11 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun setEventAsFinished() {
         this.joined = true
         findViewById<Button>(R.id.join_event_button).visibility = View.GONE
+        findViewById<TextView>(R.id.event_description_title).visibility = View.GONE
+        findViewById<TextView>(R.id.event_description).visibility = View.GONE
+        findViewById<ViewGroup>(R.id.include_activity_event_details_stats).visibility = View.VISIBLE
+
+        setStatsData()
     }
 
     private fun setEventAsJoined() {
@@ -137,4 +148,35 @@ class EventDetailsActivity : AppCompatActivity() {
                     message,
                     if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
             ).show()
+
+    private fun setStatsData() {
+        database.getLocationsByEventId(event!!.id)
+                .observe(this, Observer {
+                    if (it != null) {
+                        val start = it.firstOrNull()
+                        val end = it.lastOrNull()
+
+                        if (start != null && end != null) {
+                            val speed = TrackingUtils.calculateSpeed(start, end)
+                            findViewById<TextView>(R.id.event_time).text =
+                                    ((end.date.time - start.date.time)/(60000)).toString() // FIXME: minutes
+                            findViewById<TextView>(R.id.event_avg_speed).text =
+                                    TrackingUtils.speedToKmH(speed).toString()
+                            findViewById<TextView>(R.id.event_pace).text =
+                                    TrackingUtils.speedToPace(speed).toString()
+
+                        }
+
+                        // Graph
+                        val graph = findViewById<GraphView>(R.id.speed_graph)
+                        // TODO: ...
+                        val series = LineGraphSeries<DataPoint>(arrayOf(
+                                DataPoint(0.0, 1.0),
+                                DataPoint(1.0, 5.0),
+                                DataPoint(2.0, 3.0)
+                        ))
+                        graph.addSeries(series)
+                    }
+                })
+    }
 }

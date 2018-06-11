@@ -111,6 +111,13 @@ class TrackingUtils {
             return d / 1000
         }
 
+        /**
+         * Converts speed, given in m/s to km/h
+         */
+        fun speedToKmH(d: Double): Double {
+            return d * (60 * 60) / 1000
+        }
+
         fun calculateDistancePercent(goalDistance: Float, realDistance: Double): Double {
             if (realDistance >= goalDistance) {
                 return 1.0
