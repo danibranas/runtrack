@@ -23,6 +23,9 @@ import com.muei.apm.runtrack.utils.SocialMediaUtils
 import com.jjoe64.graphview.series.LineGraphSeries
 import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
+import com.muei.apm.runtrack.data.models.Location
+import com.muei.apm.runtrack.data.models.event.EventStatus
+import com.muei.apm.runtrack.tasks.DownloadImageTask
 import com.muei.apm.runtrack.utils.TrackingUtils
 
 
@@ -65,10 +68,16 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun initializeActivity(event: Event?) {
         this.event = event
 
-
         if (event == null) {
             showToast("Ops! Event not found :(")
+            finish()
             return
+        }
+
+        val eventPrize = if (event.prize != null) {
+            String.format(resources.getString(R.string.event_prize_format), event.prize)
+        } else {
+            "-"
         }
 
         findViewById<TextView>(R.id.event_title).text = event.name
@@ -76,16 +85,17 @@ class EventDetailsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.event_date_day).text = EventUtils.getDay(event)
         findViewById<TextView>(R.id.event_date_month).text = EventUtils.getMonthName(event)
         findViewById<TextView>(R.id.event_description).text = event.description
+        findViewById<TextView>(R.id.event_prize).text = eventPrize
         findViewById<TextView>(R.id.people_text).text = String.format(
                 resources.getString(R.string.event_people_number), event.users)
 
-        findViewById<ImageButton>(R.id.share_twitter_button).setOnClickListener {
-            val tweet = SocialMediaUtils.getTwitterIntent(this,
-                    "Hey! ${event.name} is awesome. I'll run it on Runtrack!")
-            startActivity(tweet)
-        }
+        val mapPreview = findViewById<ImageView>(R.id.event_map_preview)
 
-        findViewById<ImageView>(R.id.event_map_preview).setOnClickListener {
+        if (event.imageUri != null) {
+            val bitmap = DownloadImageTask().execute(event.imageUri).get()
+            mapPreview.setImageBitmap(bitmap)
+        }
+        mapPreview.setOnClickListener {
             val intent = Intent(this, EventMapActivity::class.java)
             intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event.id)
             intent.putExtra(EventDetailsActivity.EXTRA_EVENT_NAME, event.name)
@@ -94,14 +104,25 @@ class EventDetailsActivity : AppCompatActivity() {
         // ...
 
         database.getEventById(event.id).observe(this, Observer {
-            if (it != null) {
-                if (it.endDate != null) {
-                    setEventAsFinished()
-                } else {
+            var tweetText = "Hey! ${event.name} is awesome. I'll run it on Runtrack!"
+            when (EventUtils.getStatus(it)) {
+                EventStatus.JOINED -> {
                     setEventAsJoined()
+                    val date = "${EventUtils.getMonthName(event)} ${EventUtils.getDay(event)}"
+                    tweetText = "I'll participate ${event.name} on $date with Runtrack!"
                 }
-            } else {
-                setEventAsUnJoined()
+                EventStatus.FINISHED -> {
+                    setEventAsFinished()
+                    tweetText = "I finished ${event.name} race with Runtrack! :D"
+                }
+                else -> {
+                    setEventAsUnJoined()
+                }
+            }
+
+            findViewById<ImageButton>(R.id.share_twitter_button).setOnClickListener {
+                val tweet = SocialMediaUtils.getTwitterIntent(this, tweetText)
+                startActivity(tweet)
             }
         })
     }
@@ -138,6 +159,12 @@ class EventDetailsActivity : AppCompatActivity() {
         joinButton.setOnClickListener {
             database.joinEvent(event!!)
             showToast(resources.getText(R.string.event_joined))
+
+            event?.users = (event?.users ?: 0) + 1
+
+            findViewById<TextView>(R.id.people_text).text = String.format(
+                    resources.getString(R.string.event_people_number), event?.users)
+
             setEventAsJoined()
         }
     }
@@ -159,24 +186,41 @@ class EventDetailsActivity : AppCompatActivity() {
                         if (start != null && end != null) {
                             val speed = TrackingUtils.calculateSpeed(start, end)
                             findViewById<TextView>(R.id.event_time).text =
-                                    ((end.date.time - start.date.time)/(60000)).toString() // FIXME: minutes
+                                    EventUtils.formatTimeDiff(end.date, start.date)
                             findViewById<TextView>(R.id.event_avg_speed).text =
-                                    TrackingUtils.speedToKmH(speed).toString()
+                                    EventUtils.formatDecimal(TrackingUtils.speedToKmH(speed))
                             findViewById<TextView>(R.id.event_pace).text =
-                                    TrackingUtils.speedToPace(speed).toString()
-
+                                    EventUtils.formatDecimal(TrackingUtils.speedToPace(speed))
                         }
 
                         // Graph
                         val graph = findViewById<GraphView>(R.id.speed_graph)
-                        // TODO: ...
-                        val series = LineGraphSeries<DataPoint>(arrayOf(
-                                DataPoint(0.0, 1.0),
-                                DataPoint(1.0, 5.0),
-                                DataPoint(2.0, 3.0)
-                        ))
+
+                        // Speed
+                        val series = LineGraphSeries<DataPoint>(locationsToDataPoints(it, ::calculateSpeed))
                         graph.addSeries(series)
                     }
                 })
+    }
+
+    private fun calculateSpeed(i: Double, a: Location, b: Location): DataPoint {
+        return DataPoint(i, TrackingUtils.calculateSpeed(a, b))
+    }
+
+    private fun locationsToDataPoints(locations: List<Location>,
+                                      fx: (i: Double, a: Location, b: Location) -> DataPoint): Array<DataPoint> {
+        val result = ArrayList<DataPoint>(locations.size - 1)
+        val iterator = locations.iterator()
+
+        var previous = iterator.next()
+        var i = 0.0
+
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            result.add(fx(i++, previous, next))
+            previous = next
+        }
+
+        return result.toTypedArray()
     }
 }

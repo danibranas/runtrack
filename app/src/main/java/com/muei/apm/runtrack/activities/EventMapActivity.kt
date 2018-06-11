@@ -32,6 +32,7 @@ class EventMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_map)
 
@@ -51,11 +52,11 @@ class EventMapActivity : AppCompatActivity(), OnMapReadyCallback {
             if (it?.route != null) {
                 this.map?.addPolyline(PolylineOptions()
                         .width(30f)
-                        .color(Color.LTGRAY)
+                        .color(Color.DKGRAY)
                         .geodesic(true)
                         .addAll(it.route!!.map { loc -> LatLng(loc.latitude, loc.longitude) }))
                 val start = it.route?.firstOrNull()
-                val end = it.route?.firstOrNull()
+                val end = it.route?.lastOrNull()
 
                 if (start != null) {
                     this.map?.addMarker(MarkerOptions().position(LatLng(start.latitude, start.longitude)))

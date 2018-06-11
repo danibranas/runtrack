@@ -13,11 +13,12 @@ data class Event(var id: Long) {
     var endDate: Date? = null
     var distance: Float? = null
     var imageUri: String? = null
+    var isInternal: Boolean = false
     var users: Int = 0
-    var status = EventStatus.UNKNOWN
     var unit: EventUnit? = EventUnit.KM
     var results: Results? = null
     var route: List<Location>? = null
+    var prize: Double? = null
 
     data class Coordinates(var lat: Double, var long: Double)
 

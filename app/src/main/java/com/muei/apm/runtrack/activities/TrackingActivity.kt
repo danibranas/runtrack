@@ -81,7 +81,6 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
     private var mapFragment: View? = null
     private var chrono: PausableChronometer? = null
     private var distanceMeasure: TextView? = null
-    private var avgPaceMeasure: TextView? = null
     private var paceMeasure: TextView? = null
     private var distanceMeasureUnit: TextView? = null
     private var paceMeasureUnit: TextView? = null
@@ -194,19 +193,19 @@ class TrackingActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                 return@Observer
             }
 
-            val previousLocation = it.takeLast(2).firstOrNull()
-            val inmediatePace = TrackingUtils.calculatePace(previousLocation, Location(point))
-            val distancePercent = TrackingUtils.calculateDistancePercent(event!!.distance!!, totalDistance)
+            val goalDistance = event!!.distance!! * 1000
+            val distancePercent = TrackingUtils.calculateDistancePercent(goalDistance, totalDistance)
 
             val firstPoint = it.firstOrNull()
             val avgPace = TrackingUtils.calculatePace(firstPoint, Location(point), totalDistance)
 
             distanceMeasure?.text = EventUtils.formatDouble(TrackingUtils.distanceToKm(totalDistance))
-            avgPaceMeasure?.text = EventUtils.formatDouble(avgPace)
-            paceMeasure?.text = EventUtils.formatDouble(inmediatePace)
+            paceMeasure?.text = EventUtils.formatDouble(avgPace)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 progressBar?.setProgress(distancePercent.roundToInt(), true)
+            } else {
+                progressBar?.progress = distancePercent.roundToInt()
             }
         })
     }

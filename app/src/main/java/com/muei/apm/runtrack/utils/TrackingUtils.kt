@@ -120,10 +120,10 @@ class TrackingUtils {
 
         fun calculateDistancePercent(goalDistance: Float, realDistance: Double): Double {
             if (realDistance >= goalDistance) {
-                return 1.0
+                return 100.0
             }
 
-            val distancePercent = realDistance / goalDistance
+            val distancePercent = realDistance * 100 / goalDistance
 
             if (distancePercent.isNaN()) {
                 return 0.0

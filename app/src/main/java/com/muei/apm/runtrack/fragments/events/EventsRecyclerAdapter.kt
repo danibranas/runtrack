@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.EventDetailsActivity
 import com.muei.apm.runtrack.data.models.Event
+import com.muei.apm.runtrack.tasks.DownloadImageTask
 import com.muei.apm.runtrack.utils.EventUtils
 
 
@@ -37,7 +38,8 @@ class EventsRecyclerAdapter(events: List<Event>, val context: Context?) : Recycl
                 context?.resources?.getString(R.string.event_people_number) ?: "%d", event.users)
 
         if (event.imageUri != null) {
-            holder.itemView.findViewById<ImageView>(R.id.event_map_preview).setImageURI(Uri.parse(event.imageUri))
+            val bitmap = DownloadImageTask().execute(event.imageUri).get()
+            holder.itemView.findViewById<ImageView>(R.id.event_map_preview).setImageBitmap(bitmap)
         }
 
         holder.itemView.findViewById<TextView>(R.id.event_date_day).text = EventUtils.getDay(event)

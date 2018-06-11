@@ -48,9 +48,29 @@ class EventsFixture {
                 Location(43.3698679, -8.4057212)
         )
 
+        private fun getUniqueEvent(): Event  {
+            val now = Calendar.getInstance()
+            now.set(Calendar.HOUR, 19)
+            now.set(Calendar.MINUTE, 30)
+
+            val ev = Event(219)
+            ev.name = "I kilometer of solidarity AC"
+            ev.distance = 1.0f
+            ev.date = now.time
+            ev.route = route
+            ev.description = "Kilometer of solidarity is a demo race to show Runtrack capabilities. Enjoy it!"
+            ev.users = 0
+            ev.imageUri = "https://raw.githubusercontent.com/danibranas/runtrack/master/app/src/main/res/drawable/solidary_km_race.png"
+
+            return ev
+        }
+
         fun generate(length: Int = 5): List<Event> {
             return (0..length.absoluteValue).map {
-                _ -> generateRandomEvent()
+                when (it) {
+                    length.absoluteValue -> getUniqueEvent()
+                    else -> generateRandomEvent()
+                }
             }
         }
 
