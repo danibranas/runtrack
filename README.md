@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/danibranas/runtrack.svg?branch=master)](https://travis-ci.org/danibranas/runtrack)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Tracking app for runners on Android.
+Tracking app for runners for Android platform.
 
 **Work in Progress!!**: this project is not suitable for use in production.
 
