@@ -19,14 +19,12 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.events.EventsStatePageAdapter
-import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.tasks.DownloadImageTask
 import kotlinx.android.synthetic.main.activity_events.drawer_layout
 import kotlinx.android.synthetic.main.activity_events.nav_view
@@ -84,18 +82,6 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                     startActivity(Intent(Intent.ACTION_VIEW,
                             Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
                 }
-            }
-            R.id.nav_diagnostics -> {
-                startActivity(Intent(this, DiagnosticsActivity::class.java))
-            }
-            R.id.nav_clear_db -> {
-                AlertDialog.Builder(this)
-                        .setMessage(R.string.clear_database_message)
-                        .setPositiveButton(R.string.clear_database, { _: DialogInterface, _: Int ->
-                            AppDatabase.clearDatabase()
-                        })
-                        .setNegativeButton(getString(R.string.no), null)
-                        .show()
             }
             R.id.nav_sign_out -> {
                 AlertDialog.Builder(this)
@@ -195,13 +181,6 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         val dr = RoundedBitmapDrawableFactory.create(Resources.getSystem(), bitmap)
         dr.cornerRadius = (image.height/2).toFloat()
     }
-
-    private fun showToast(message: CharSequence, isLong: Boolean = false) =
-            Toast.makeText(
-                    this,
-                    message,
-                    if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
-            ).show()
 
     @Synchronized
     private fun getGoogleSignInClient(): GoogleSignInClient {
