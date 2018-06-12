@@ -2,7 +2,6 @@ package com.muei.apm.runtrack.fragments.events
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -38,8 +37,13 @@ class EventsRecyclerAdapter(events: List<Event>, val context: Context?) : Recycl
                 context?.resources?.getString(R.string.event_people_number) ?: "%d", event.users)
 
         if (event.imageUri != null) {
-            val bitmap = DownloadImageTask().execute(event.imageUri).get()
-            holder.itemView.findViewById<ImageView>(R.id.event_map_preview).setImageBitmap(bitmap)
+            if (event.isInternal) {
+                holder.itemView.findViewById<ImageView>(R.id.event_map_preview)
+                        .setImageResource(event.imageUri!!.toInt())
+            } else {
+                val bitmap = DownloadImageTask().execute(event.imageUri).get()
+                holder.itemView.findViewById<ImageView>(R.id.event_map_preview).setImageBitmap(bitmap)
+            }
         }
 
         holder.itemView.findViewById<TextView>(R.id.event_date_day).text = EventUtils.getDay(event)

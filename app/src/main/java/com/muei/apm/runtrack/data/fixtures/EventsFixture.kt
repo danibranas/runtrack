@@ -1,5 +1,6 @@
 package com.muei.apm.runtrack.data.fixtures
 
+import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.data.models.Event
 import com.muei.apm.runtrack.data.models.Location
 import java.util.*
@@ -48,7 +49,7 @@ class EventsFixture {
                 Location(43.3698679, -8.4057212)
         )
 
-        private fun getUniqueEvent(): Event  {
+        private fun getUniqueEvent(id: Int): Event  {
             val now = Calendar.getInstance()
             now.set(Calendar.HOUR, 19)
             now.set(Calendar.MINUTE, 30)
@@ -59,19 +60,47 @@ class EventsFixture {
             ev.date = now.time
             ev.route = route
             ev.description = "Kilometer of solidarity is a demo race to show Runtrack capabilities. Enjoy it!"
+            ev.isInternal = true
             ev.users = 0
-            ev.imageUri = "https://raw.githubusercontent.com/danibranas/runtrack/master/app/src/main/res/drawable/solidary_km_race.png"
+            ev.prize = null
+            // "https://raw.githubusercontent.com/danibranas/runtrack/master/app/src/main/res/drawable/solidary_km_race.png"
+            ev.imageUri = R.drawable.solidary_km_race.toString()
+
+            when (id) {
+                0 -> {
+                    ev.id = 180
+                    ev.name = names[Random().nextInt(names.size)]
+                    ev.distance = 4.4f
+                    ev.date = generateRandomDate()
+                    ev.users = Random().nextInt(100)
+                    ev.imageUri = R.drawable.route_2.toString()
+                }
+                1 -> {
+                    ev.id = 190
+                    ev.name = names[Random().nextInt(names.size)]
+                    ev.distance = 5.75f
+                    ev.date = generateRandomDate()
+                    ev.users = Random().nextInt(100)
+                    ev.imageUri = R.drawable.route_3.toString()
+                }
+                else -> {}
+            }
 
             return ev
         }
 
         fun generate(length: Int = 5): List<Event> {
             return (0..length.absoluteValue).map {
-                when (it) {
-                    length.absoluteValue -> getUniqueEvent()
-                    else -> generateRandomEvent()
-                }
+                generateRandomEvent()
             }
+        }
+
+        fun generateDemo(): List<Event> {
+            return listOf(
+                    getUniqueEvent(0),
+                    getUniqueEvent(1),
+                    getUniqueEvent(2)
+            )
         }
 
         private fun generateRandomEvent(): Event {

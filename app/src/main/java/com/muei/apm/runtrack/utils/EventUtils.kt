@@ -31,6 +31,12 @@ class EventUtils {
             return "%.2f".format(num)
         }
 
+        fun getHour(event: Event): String {
+            val calendar = Calendar.getInstance()
+            calendar.time = event.date
+            return String.format("%d:%02d", calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE))
+        }
+
         fun getStatus(event: Event?): EventStatus {
             return if (event != null) {
                 if (event.endDate != null) {

@@ -17,6 +17,9 @@ class EventConverter {
             event.name = e.name
             event.distance = e.distance
             event.imageUri = e.imageUri
+            event.isInternal = e.isInternal
+            event.users = e.users
+            event.prize = e.prize
 
             if (e.endDate != null) {
                 event.endDate = Date(e.endDate!!)
@@ -55,10 +58,13 @@ class EventConverter {
             eventEntity.coordinateLat = m.coordinates?.lat
             eventEntity.coordinateLng = m.coordinates?.long
             eventEntity.endDate = m.endDate?.time
+            eventEntity.imageUri = m.imageUri
+            eventEntity.prize = m.prize
+            eventEntity.users = m.users
+            eventEntity.isInternal = m.isInternal
 
             eventEntity = modelToEntityResults(m.results, eventEntity)
 
-            // TODO: ...
             return eventEntity
         }
 

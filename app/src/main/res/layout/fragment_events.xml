@@ -41,7 +41,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.33" />
 
-    <ImageView
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
         android:contentDescription="@string/loading"
         android:visibility="gone"
         android:id="@+id/loading_spinner"
@@ -53,7 +54,6 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/spinner"
         app:layout_constraintBottom_toBottomOf="@+id/swipe_refresh"
         app:layout_constraintEnd_toEndOf="@+id/swipe_refresh"
         app:layout_constraintStart_toStartOf="@+id/swipe_refresh"

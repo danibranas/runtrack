@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.muei.apm.runtrack.R
@@ -57,7 +58,18 @@ class EventDetailsActivity : AppCompatActivity() {
         val eventId = savedInstanceState?.getLong(EXTRA_EVENT_ID)
                 ?: intent.getLongExtra(EXTRA_EVENT_ID, -1)
 
+        showLoading()
         api.findEventById(eventId).onResult(::initializeActivity)
+    }
+
+    private fun showLoading() {
+        findViewById<ProgressBar>(R.id.loading_spinner)?.visibility = View.VISIBLE
+        findViewById<ImageView>(R.id.event_map_preview)?.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        findViewById<ProgressBar>(R.id.loading_spinner)?.visibility = View.GONE
+        findViewById<ImageView>(R.id.event_map_preview)?.visibility = View.VISIBLE
     }
 
     override fun onSaveInstanceState(bundle: Bundle) {
@@ -68,17 +80,15 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun initializeActivity(event: Event?) {
         this.event = event
 
+        hideLoading()
+
         if (event == null) {
             showToast("Ops! Event not found :(")
             finish()
             return
         }
 
-        val eventPrize = if (event.prize != null) {
-            String.format(resources.getString(R.string.event_prize_format), event.prize)
-        } else {
-            "-"
-        }
+        val eventPrize = "-"
 
         findViewById<TextView>(R.id.event_title).text = event.name
         findViewById<TextView>(R.id.event_distance).text = EventUtils.formatDistance(event)
@@ -88,12 +98,17 @@ class EventDetailsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.event_prize).text = eventPrize
         findViewById<TextView>(R.id.people_text).text = String.format(
                 resources.getString(R.string.event_people_number), event.users)
+        findViewById<TextView>(R.id.event_hour).text = EventUtils.getHour(event)
 
         val mapPreview = findViewById<ImageView>(R.id.event_map_preview)
 
         if (event.imageUri != null) {
-            val bitmap = DownloadImageTask().execute(event.imageUri).get()
-            mapPreview.setImageBitmap(bitmap)
+            if (event.isInternal) {
+                mapPreview.setImageResource(event.imageUri!!.toInt())
+            } else {
+                val bitmap = DownloadImageTask().execute(event.imageUri).get()
+                mapPreview.setImageBitmap(bitmap)
+            }
         }
         mapPreview.setOnClickListener {
             val intent = Intent(this, EventMapActivity::class.java)

@@ -19,6 +19,7 @@ class DiagnosticsActivity : AppCompatActivity(), SensorEventListener {
     private var stepCounterSensor: Sensor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diagnostics)
 

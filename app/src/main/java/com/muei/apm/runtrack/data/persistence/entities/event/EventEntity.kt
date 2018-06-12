@@ -18,6 +18,9 @@ data class EventEntity(
     @ColumnInfo var distance: Float? = null
     @ColumnInfo var unit: String? = null
     @ColumnInfo var imageUri: String? = null
+    @ColumnInfo var prize: Double? = null
+    @ColumnInfo var users: Int = 0
+    @ColumnInfo var isInternal: Boolean = false
 
     // Exclusive joined
     @ColumnInfo var avgSpeed: Long? = null

@@ -11,7 +11,7 @@ class MockApi(val context: Context): Api {
 
     companion object {
         private val nearEvents by lazy {
-            EventsFixture.generate(3)
+            EventsFixture.generateDemo()
         }
     }
 

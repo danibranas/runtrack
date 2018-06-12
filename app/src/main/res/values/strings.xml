@@ -128,4 +128,6 @@
     <string name="event_pace">Pace</string>
     <string name="event_avg_speed">Avg speed</string>
     <string name="loading">Loading...</string>
+    <string name="clear_database">Clear database</string>
+    <string name="clear_database_message">Are you sure you want to clear database? This action cannot be undone</string>
 </resources>

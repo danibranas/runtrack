@@ -3,6 +3,7 @@ package com.muei.apm.runtrack.fragments
 import android.arch.lifecycle.Observer
 import android.support.v4.app.Fragment
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -10,7 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.ProgressBar
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.EventsActivity
 import com.muei.apm.runtrack.data.api.Api
@@ -86,12 +87,15 @@ class EventsActivityFragment : Fragment() {
                     showLoading(view)
                 }
 
-                val a = api.fetchNearEvents(0, 0)
-                a.onResult(fun (list: List<Event>) {
-                    hideLoading(view)
-                    setViewByContent(list, view)
-                    eventsRecyclerView.adapter = EventsRecyclerAdapter(list, context!!)
-                })
+                Handler().postDelayed({ // FIXME
+                    // This method will be executed once the timer is over
+                    val a = api.fetchNearEvents(0, 0)
+                    a.onResult(fun (list: List<Event>) {
+                        hideLoading(view)
+                        setViewByContent(list, view)
+                        eventsRecyclerView.adapter = EventsRecyclerAdapter(list, context!!)
+                    })
+                }, 1500)
             }
             Mode.MODE_MY_EVENTS -> {
                 storage.getMyFinishedEvents().observe(this, Observer<List<Event>> {
@@ -113,11 +117,11 @@ class EventsActivityFragment : Fragment() {
     }
 
     private fun showLoading(view: View) {
-        view.findViewById<ImageView>(R.id.loading_spinner)?.visibility = View.VISIBLE
+        view.findViewById<ProgressBar>(R.id.loading_spinner)?.visibility = View.VISIBLE
     }
 
     private fun hideLoading(view: View) {
-        view.findViewById<ImageView>(R.id.loading_spinner)?.visibility = View.GONE
+        view.findViewById<ProgressBar>(R.id.loading_spinner)?.visibility = View.GONE
     }
 
     private fun setViewByContent(list: List<*>, view: View) {

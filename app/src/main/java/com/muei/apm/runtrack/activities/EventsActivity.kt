@@ -26,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.muei.apm.runtrack.R
 import com.muei.apm.runtrack.activities.events.EventsStatePageAdapter
+import com.muei.apm.runtrack.data.persistence.AppDatabase
 import com.muei.apm.runtrack.tasks.DownloadImageTask
 import kotlinx.android.synthetic.main.activity_events.drawer_layout
 import kotlinx.android.synthetic.main.activity_events.nav_view
@@ -88,6 +89,15 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 val intent = Intent(this, DiagnosticsActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_clear_db -> {
+                AlertDialog.Builder(this)
+                        .setMessage(R.string.clear_database_message)
+                        .setPositiveButton(R.string.clear_database, { _: DialogInterface, _: Int ->
+                            AppDatabase.clearDatabase()
+                        })
+                        .setNegativeButton(getString(R.string.no), null)
+                        .show()
+            }
             R.id.nav_sign_out -> {
                 AlertDialog.Builder(this)
                         .setMessage(R.string.sign_out_confirm)
@@ -107,8 +117,8 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
 
     fun onAddEventClick(view: View?) {
         val options = arrayOf(
-                resources.getString(R.string.add_event_by_id),
-                resources.getString(R.string.add_event_by_qr)
+                view!!.resources.getString(R.string.add_event_by_id),
+                view.resources.getString(R.string.add_event_by_qr)
         )
 
         AlertDialog.Builder(this)
@@ -116,18 +126,14 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 .setItems(options, {
                     _, which ->
                         when (which) {
-                            0 -> onTrackEvent(null)
-                            1 -> onScanEventClick(null)
+                            0 -> onTrackEvent()
+                            1 -> onScanEventClick()
                         }
                 })
                 .show()
     }
 
-    fun onTrackEventIdClick(view: View) {
-        //loadInContainer(null, TrackEventIdActivityFragment::class.java)
-    }
-
-    fun onTrackEvent(view: View?) {
+    private fun onTrackEvent() {
         val eventIdInput = EditText(this)
         eventIdInput.inputType = InputType.TYPE_CLASS_NUMBER
 
@@ -143,7 +149,7 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 .show()
     }
 
-    fun onScanEventClick(view: View?) {
+    private fun onScanEventClick() {
         val intent = Intent(applicationContext, BarcodeCaptureActivity::class.java)
         startActivity(intent)
     }

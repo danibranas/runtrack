@@ -27,6 +27,10 @@
             android:id="@+id/nav_diagnostics"
             android:title="@string/menu_diagnostics"
             android:icon="@drawable/ic_menu_manage" />
+        <item
+            android:id="@+id/nav_clear_db"
+            android:title="@string/clear_database"
+            android:icon="@drawable/ic_cancel" />
     </group>
 
     <group android:checkableBehavior="single">
