@@ -16,21 +16,21 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_settings"
-            android:title="@string/menu_settings"
-            android:icon="@drawable/ic_settings_icon" />
-        <item
             android:id="@+id/nav_rate_us"
             android:title="@string/menu_rate_us"
             android:icon="@drawable/ic_star_icon" />
         <item
+            android:id="@+id/nav_settings"
+            android:title="@string/menu_settings"
+            android:icon="@drawable/ic_settings_icon" />
+        <!--<item
             android:id="@+id/nav_diagnostics"
             android:title="@string/menu_diagnostics"
             android:icon="@drawable/ic_menu_manage" />
         <item
             android:id="@+id/nav_clear_db"
             android:title="@string/clear_database"
-            android:icon="@drawable/ic_cancel" />
+            android:icon="@drawable/ic_cancel" />-->
     </group>
 
     <group android:checkableBehavior="single">

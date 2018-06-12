@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Runtrack</string>
+    <string name="app_about">Runtrack is an UDC-APM project. More info: https://github.com/danibranas/runtrack</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -26,6 +27,7 @@
     <string name="menu_rate_us">Rate us</string>
     <string name="menu_diagnostics">Diagnostics</string>
     <string name="menu_sign_out">Sign out</string>
+    <string name="menu_about">About</string>
 
     <string name="event_join_button">Join event</string>
     <string name="event_start_button">Start event!</string>

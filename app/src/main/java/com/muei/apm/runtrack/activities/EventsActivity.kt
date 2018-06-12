@@ -73,7 +73,7 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 onAddEventClick(findViewById(R.id.nav_add_event))
             }
             R.id.nav_settings -> {
-                showToast("TODO: Open settings activity")
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
             R.id.nav_rate_us -> {
                 val appPackageName = packageName
@@ -86,8 +86,7 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 }
             }
             R.id.nav_diagnostics -> {
-                val intent = Intent(this, DiagnosticsActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, DiagnosticsActivity::class.java))
             }
             R.id.nav_clear_db -> {
                 AlertDialog.Builder(this)
