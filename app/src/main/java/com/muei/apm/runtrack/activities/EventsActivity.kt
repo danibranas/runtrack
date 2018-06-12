@@ -67,9 +67,6 @@ class EventsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_events -> {}
-            R.id.nav_add_event -> {
-                onAddEventClick(findViewById(R.id.nav_add_event))
-            }
             R.id.nav_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }

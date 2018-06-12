@@ -8,10 +8,6 @@
             android:id="@+id/nav_events"
             android:title="@string/menu_events"
             android:icon="@drawable/ic_run" />
-        <item
-            android:id="@+id/nav_add_event"
-            android:title="@string/menu_add_event"
-            android:icon="@drawable/ic_plus_circle_icon" />
     </group>
 
     <group android:checkableBehavior="single">
@@ -23,14 +19,6 @@
             android:id="@+id/nav_settings"
             android:title="@string/menu_settings"
             android:icon="@drawable/ic_settings_icon" />
-        <!--<item
-            android:id="@+id/nav_diagnostics"
-            android:title="@string/menu_diagnostics"
-            android:icon="@drawable/ic_menu_manage" />
-        <item
-            android:id="@+id/nav_clear_db"
-            android:title="@string/clear_database"
-            android:icon="@drawable/ic_cancel" />-->
     </group>
 
     <group android:checkableBehavior="single">
